@@ -10,7 +10,7 @@ import { createPageUrl } from "@/utils";
 import { ProductService } from '@/services/ProductService';
 import { CustomerService } from '@/services/CustomerService';
 import { OrderService } from '@/services/OrderService';
-import OrderForm from "../components/pedidos/OrderForm.js";
+import { OrderFormProps } from '@/types/orderProps';
 
 export default function NovoPedido() {
   const navigate = useNavigate();
@@ -71,6 +71,23 @@ export default function NovoPedido() {
       console.error("Erro ao salvar pedido:", error);
     }
     setIsSaving(false);
+  };
+
+  const OrderForm = ({ order, products, customers, onSave, onCancel, isSaving}: OrderFormProps) => {
+    if (!order) return null;
+
+    return (
+      <form onSubmit={() => onSave(order)}>
+        {/* Campos do formulário aqui */}
+
+        <button type="submit" disabled={isSaving}>
+          {isSaving ? "Salvando..." : "Salvar"}
+        </button>
+        <button type="button" onClick={onCancel}>
+          Cancelar
+        </button>
+      </form>
+    );
   };
 
   return (
