@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Customer } from "@/entities/Customer";
+import { Customer } from "@/types/customers";
+import { CustomerService } from "@/services/CustomerService.js"
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Save } from "lucide-react";
@@ -11,14 +12,14 @@ import CustomerForm from "../components/cadastros/CustomerForm.js";
 export default function NovoCliente() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [customer, setCustomer] = useState(null);
+  const [customer, setCustomer] = useState<Customer | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (id) {
       setIsLoading(true);
-      Customer.get(id)
+      CustomerService.get(id)
         .then(data => {
           setCustomer(data);
           setIsLoading(false);
@@ -32,13 +33,13 @@ export default function NovoCliente() {
     }
   }, [id]);
 
-  const handleSaveCustomer = async (customerData) => {
+  const handleSaveCustomer = async (customerData: any) => {
     setIsSaving(true);
     try {
       if (id) {
-        await Customer.update(id, customerData);
+        await CustomerService.update(Number(id), customerData);
       } else {
-        await Customer.create(customerData);
+        await CustomerService.create(customerData);
       }
       navigate(createPageUrl("Cadastros"));
     } catch (error) {
@@ -54,7 +55,7 @@ export default function NovoCliente() {
         <div className="flex items-center gap-4">
           <Button
             variant="outline"
-            size="icon"
+            size="md"
             onClick={() => navigate(createPageUrl("Cadastros"))}
           >
             <ArrowLeft className="w-4 h-4" />
