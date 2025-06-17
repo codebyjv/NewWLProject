@@ -3,6 +3,7 @@ import { Product } from "@/types/product";
 export const productsMock: Product[] = [
   {
     name: "Peso Padrão Aço Inox F1 1mg",
+    id: "1mg-f1",
     material: "aco_inox_f1",
     weight: "1mg",
     weight_in_grams: 0.001,

@@ -45,23 +45,23 @@ export default function NovoPedido() {
     setIsLoading(false);
   };
 
-  const handleSaveOrder = async (orderData) => {
+  const handleSaveOrder = async (OrderData: any) => {
     setIsSaving(true);
     try {
       if (id) {
         // Lógica de edição
-        await Order.update(id, orderData);
+        await OrderService.update(Number(id), OrderData);
       } else {
         // Lógica de criação
-        orderData.order_number = `PED${Date.now()}`;
-        const newOrder = await Order.create(orderData);
+        OrderData.order_number = `PED${Date.now()}`;
+        const newOrder = await OrderService.create(Number(id), OrderData);
 
         // Atualizar estoque dos produtos
-        for (const item of orderData.items) {
+        for (const item of OrderData.items) {
           const product = products.find(p => p.id === item.product_id);
           if (product) {
             const newQuantity = Math.max(0, product.stock_quantity - item.quantity);
-            await Product.update(product.id, { stock_quantity: newQuantity });
+            await ProductService.update(product.id, { stock_quantity: newQuantity });
           }
         }
       }

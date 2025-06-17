@@ -15,4 +15,26 @@ export class OrderService {
     const response = await fetch(`/api/orders/${id}`);
     return response.json();
   } 
+
+  static async update(id: number, order: any) {
+    const response = await fetch(`/api/orders/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(order)
+    });
+    return response.json();
+  }
+
+  static async create(id: number, order: any) {
+    const response = await fetch(`/api/orders/${id}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(order)
+    });
+    return response.json( );
+  }
 }
