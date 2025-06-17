@@ -1,38 +1,26 @@
 
 import React, { useState, useEffect } from "react";
-import { Customer } from "@/entities/Customer";
+
+import { Customer } from "@/types/customers";
+import { CustomerService } from "@/services/CustomerService";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { 
-  Search, 
-  Plus, 
-  Users, 
-  Download,
-  Filter
-} from "lucide-react";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { Link } from "react-router-dom";
-import { createPageUrl } from "@/utils";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-
 import CustomerTable from "../components/cadastros/CustomerTable";
 import CustomerFilters from "../components/cadastros/CustomerFilters";
 import CustomerDetails from "../components/cadastros/CustomerDetails";
 
+import { Search, Plus, Users, Download, Filter } from "lucide-react";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+
 export default function Cadastros() {
-  const [customers, setCustomers] = useState([]);
-  const [filteredCustomers, setFilteredCustomers] = useState([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState({
@@ -52,7 +40,7 @@ export default function Cadastros() {
   const loadCustomers = async () => {
     setIsLoading(true);
     try {
-      const data = await Customer.list("-created_date").catch(() => []);
+      const data = await CustomerService.list("-created_date").catch(() => []);
       setCustomers(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Erro ao carregar clientes:", error);
@@ -89,13 +77,13 @@ export default function Cadastros() {
     setFilteredCustomers(filtered);
   };
 
-  const handleFilterChange = (newFilters) => {
+  const handleFilterChange = (newFilters: Filters) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
   };
 
-  const handleDeleteCustomer = async (customerId) => {
+  const handleDeleteCustomer = async (id: Number) => {
     try {
-      await Customer.delete(customerId);
+      await CustomerService.delete(id);
       setSelectedCustomer(null);
       loadCustomers();
     } catch (error) {
@@ -119,19 +107,20 @@ export default function Cadastros() {
       "Número": customer.endereco?.numero || "",
       "Bairro": customer.endereco?.bairro || "",
       "Status": customer.is_active ? "Ativo" : "Inativo",
-      "Data de Cadastro": customer.created_date ? format(new Date(customer.created_date), "dd/MM/yyyy HH:mm") : ""
+      "Data de Cadastro": customer.cliente_desde ? format(new Date(customer.cliente_desde), "dd/MM/yyyy HH:mm") : ""
     }));
 
     if (csvData.length === 0) return;
 
-    const headers = Object.keys(csvData[0]);
+    const headers = Object.keys(csvData[0]) as Array<keyof CsvRow>;;
     const csvContent = [
       headers.join(';'),
-      ...csvData.map(row => headers.map(header => {
-        const value = row[header];
-        // Handle quotes and newlines in CSV values
-        return `"${String(value).replace(/"/g, '""')}"`;
-      }).join(';'))
+      ...csvData.map((row: CsvRow) =>
+        headers.map(header => {
+          const value = row[header]; // Agora o TypeScript sabe que este acesso é seguro
+          return `"${String(value).replace(/"/g, '""')}"`;
+        }).join(';')
+      )
     ].join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });

@@ -32,4 +32,11 @@ export class CustomerService {
     });
     return response.json();
   }
+
+  static async delete(id: Number) {
+    const response = await fetch(`/api/orders/${id}`, {
+      method: 'DELETE',
+    });
+    return response.json();
+  }
 }

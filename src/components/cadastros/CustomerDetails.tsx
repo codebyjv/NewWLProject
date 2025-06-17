@@ -30,7 +30,7 @@ const tipoContribuinteLabels = {
 
 interface CustomerDetailsProps {
   customer: any; // Replace 'any' with the actual type of 'customer'
-  onDelete: (id: string) => void;
+  onDelete: (id: number) => void;
 }
 
 const UserIcon = User as React.ComponentType<React.SVGProps<SVGSVGElement>>;
