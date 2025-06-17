@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect } from "react";
-import { Customer } from "@/entities/customer";
-import { Order, type Order as OrderType } from "@/entities/order";
+import { Customer } from "@/types/customers";
+import { Order } from "@/types/order";
+import { OrderProps } from "@/types/orderProps"
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";

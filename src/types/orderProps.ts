@@ -1,16 +1,17 @@
 import { OrderService } from "@/services/OrderService";
-import { ProductService } from "@/services/ProductService";
-import { CustomerService } from "@/services/CustomerService";
+import { Order } from "@/types/order";
+import { Product } from "@/types/product";
+import { Customer } from "@/types/customers";
 
-type OrderProps = {
-  order: OrderService;
+export type OrderProps = {
+  order: Order;
   onDelete: (id: number) => void; 
 };
 
 export interface OrderFormProps {
-  order: OrderService | null;
-  products: ProductService[];
-  customers: CustomerService[];
+  order: Order | null;
+  products: Product[];
+  customers: Customer[];
   onSave: (orderData: OrderService) => void;
   onCancel: () => void;
   isSaving: boolean;
