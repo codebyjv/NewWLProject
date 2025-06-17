@@ -15,7 +15,7 @@ import OrderForm from "../components/pedidos/OrderForm.js";
 export default function NovoPedido() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [order, setOrder] = useState<Order[]>([]);
+  const [order, setOrder] = useState<Order | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -80,7 +80,7 @@ export default function NovoPedido() {
         <div className="flex items-center gap-4">
           <Button
             variant="outline"
-            size="icon"
+            size="md"
             onClick={() => navigate(createPageUrl("Pedidos"))}
           >
             <ArrowLeft className="w-4 h-4" />
