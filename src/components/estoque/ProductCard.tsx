@@ -2,7 +2,12 @@ import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertTriangle, PackageX } from "lucide-react";
 
-export default function StockAlert({ lowStockCount, outOfStockCount }) {
+interface StockAlertProps {
+  lowStockCount?: number;
+  outOfStockCount?: number;
+}
+
+export default function StockAlert({ lowStockCount, outOfStockCount }: StockAlertProps) {
   return (
     <Card className="bg-amber-50 border-amber-200">
       <CardContent className="p-4">

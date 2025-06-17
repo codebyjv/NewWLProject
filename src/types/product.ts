@@ -5,7 +5,7 @@ export interface Product {
   weight: string;
   weight_in_grams: number;
   stock_quantity: number;
-  min_stock?: number;
+  min_stock: number;
   unit_price?: number;
   is_active: boolean;
 }

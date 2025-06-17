@@ -1,33 +1,27 @@
 import React, { useState, useEffect } from "react";
-import { Product } from "@/entities/Product";
+
+import { ProductService } from "@/services/ProductService"
+import { Product } from "@/types/product";
+import { ProductCardProps } from "@/types/productsProps";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  Search, 
-  Plus, 
-  Package, 
-  AlertTriangle,
-  Edit,
-  Filter
-} from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Link } from "react-router-dom";
-import { createPageUrl } from "@/utils";
-
 import ProductCard from "../components/estoque/ProductCard";
 import ProductForm from "../components/estoque/ProductForm";
 import StockAlert from "../components/estoque/StockAlert";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+import { Search, Plus, Package, AlertTriangle, Edit, Filter } from "lucide-react";
 
 export default function Estoque() {
-  const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [materialFilter, setMaterialFilter] = useState("all");
   const [stockFilter, setStockFilter] = useState("all");
   const [showForm, setShowForm] = useState(false);
-  const [editingProduct, setEditingProduct] = useState(null);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -41,7 +35,7 @@ export default function Estoque() {
   const loadProducts = async () => {
     setIsLoading(true);
     try {
-      const data = await Product.list("weight_in_grams");
+      const data = await ProductService.list("weight_in_grams");
       setProducts(data);
     } catch (error) {
       console.error("Erro ao carregar produtos:", error);
@@ -75,12 +69,12 @@ export default function Estoque() {
     setFilteredProducts(filtered);
   };
 
-  const handleSaveProduct = async (productData) => {
+  const handleSaveProduct = async (productData: Product) => {
     try {
       if (editingProduct) {
-        await Product.update(editingProduct.id, productData);
+        await ProductService.update(editingProduct.id, productData);
       } else {
-        await Product.create(productData);
+        await ProductService.create(productData);
       }
       setShowForm(false);
       setEditingProduct(null);
@@ -90,9 +84,19 @@ export default function Estoque() {
     }
   };
 
-  const handleEditProduct = (product) => {
+  const handleEditProduct = (product: Product) => {
     setEditingProduct(product);
     setShowForm(true);
+  };
+
+  const ProductCard = ({ product, onEdit }: ProductCardProps) => {
+    return (
+      <ProductCard
+        key={product.id}
+        product={product}
+        onEdit={() => handleEditProduct(product)}
+      />
+    );
   };
 
   const lowStockCount = products.filter(p => p.stock_quantity <= p.min_stock).length;

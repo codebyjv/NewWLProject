@@ -1,3 +1,6 @@
+import { Product } from '@/types/product';
+
+
 export class ProductService {
   static async list(sortBy?: string) {
     // Implementação real com sua API (fetch/axios/supabase)
@@ -9,6 +12,17 @@ export class ProductService {
     // Implementação real com sua API (fetch/axios/supabase)
     const response = await fetch(`/api/products/${id}`, {
       method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    return response.json();
+  }
+
+  static async create(data: Omit<Product, 'id'>) { 
+    const response = await fetch('/api/products', { 
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
