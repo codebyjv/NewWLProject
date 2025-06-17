@@ -1,18 +1,14 @@
 
 import React, { useState, useEffect } from "react";
-import { Product } from "@/entities/Product";
-import { Order } from "@/entities/Order";
-import { Customer } from "@/entities/Customer";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { 
-  Package, 
-  ShoppingCart, 
-  Users, 
-  AlertTriangle,
-  TrendingUp,
-  DollarSign
-} from "lucide-react";
+
+import { ProductService } from "@/services/ProductService";
+import { Product } from "@/types/product";
+import { OrderService } from "@/services/OrderService";
+import { Order } from "@/types/order";
+import { CustomerService } from "@/services/CustomerService";
+
+import { Package, ShoppingCart, Users, AlertTriangle, TrendingUp, DollarSign } from "lucide-react";
+
 import { format, startOfMonth, endOfMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -20,6 +16,8 @@ import StatsCard from "../components/dashboard/StatsCard";
 import LowStockAlert from "../components/dashboard/LowStockAlert";
 import RecentOrders from "../components/dashboard/RecentOrders";
 import TopProducts from "../components/dashboard/TopProducts";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -30,8 +28,8 @@ export default function Dashboard() {
     monthlyRevenue: 0,
     pendingOrders: 0
   });
-  const [lowStockProducts, setLowStockProducts] = useState([]);
-  const [recentOrders, setRecentOrders] = useState([]);
+  const [lowStockProducts, setLowStockProducts] = useState<Product[]>([]);
+  const [recentOrders, setRecentOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -42,9 +40,9 @@ export default function Dashboard() {
     setIsLoading(true);
     try {
       const [products = [], orders = [], customers = []] = await Promise.all([
-        Product.list().catch(() => []),
-        Order.list("-created_date").catch(() => []),
-        Customer.list().catch(() => [])
+        ProductService.list().catch(() => []),
+        OrderService.list("-created_date").catch(() => []),
+        CustomerService.list().catch(() => [])
       ]);
 
       // Produtos com estoque baixo
@@ -88,7 +86,8 @@ export default function Dashboard() {
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
             <p className="text-gray-600 mt-1">
-              Visão geral do sistema - {format(new Date(), "EEEE, d 'de' MMMM", { locale: ptBR })}
+              Visão geral do sistema -{" "}
+              {format(new Date(), "EEEE, d 'de' MMMM", { locale: ptBR })}
             </p>
           </div>
         </div>
@@ -101,6 +100,7 @@ export default function Dashboard() {
             icon={Package}
             color="blue"
             isLoading={isLoading}
+            alert={stats.totalProducts > 0 ? "green" : "red"}
           />
           <StatsCard
             title="Pedidos do Mês"
@@ -108,6 +108,7 @@ export default function Dashboard() {
             icon={ShoppingCart}
             color="green"
             isLoading={isLoading}
+            alert={stats.totalOrders > 0 ? "green" : "red"}
           />
           <StatsCard
             title="Clientes Cadastrados"
@@ -115,6 +116,7 @@ export default function Dashboard() {
             icon={Users}
             color="purple"
             isLoading={isLoading}
+            alert={stats.totalCustomers > 0 ? "green" : "red"}
           />
           <StatsCard
             title="Estoque Baixo"
@@ -137,13 +139,13 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">
-                {new Intl.NumberFormat('pt-BR', {
-                  style: 'currency',
-                  currency: 'BRL'
+                {new Intl.NumberFormat("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
                 }).format(stats.monthlyRevenue)}
               </div>
               <p className="text-red-100 text-sm mt-1">
-                {format(new Date(), 'MMMM yyyy', { locale: ptBR })}
+                {format(new Date(), "MMMM yyyy", { locale: ptBR })}
               </p>
             </CardContent>
           </Card>
@@ -172,7 +174,7 @@ export default function Dashboard() {
             <RecentOrders orders={recentOrders} isLoading={isLoading} />
             <TopProducts products={lowStockProducts} isLoading={isLoading} />
           </div>
-          
+
           <div className="space-y-6">
             <LowStockAlert products={lowStockProducts} isLoading={isLoading} />
           </div>
