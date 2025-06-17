@@ -6,13 +6,12 @@ import { ProductCardProps } from "@/types/productsProps";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import ProductCard from "../components/estoque/ProductCard";
+import { Card, CardContent } from "@/components/ui/card";
 import ProductForm from "../components/estoque/ProductForm";
 import StockAlert from "../components/estoque/StockAlert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-import { Search, Plus, Package, AlertTriangle, Edit, Filter } from "lucide-react";
+import { Search, Plus, Package, AlertTriangle } from "lucide-react";
 
 export default function Estoque() {
   const [products, setProducts] = useState<Product[]>([]);
