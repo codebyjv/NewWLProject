@@ -10,4 +10,9 @@ export class OrderService {
     });
     return response.json();
   }
+
+  static async get(id: number) {
+    const response = await fetch(`/api/orders/${id}`);
+    return response.json();
+  } 
 }

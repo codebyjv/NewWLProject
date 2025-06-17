@@ -36,7 +36,7 @@ export default function NovoPedido() {
       setCustomers(customersData.filter(c => c.is_active));
 
       if (id) {
-        const orderData = await OrderService.get(id);
+        const orderData = await OrderService.get(Number(id));
         setOrder(orderData);
       }
     } catch (error) {
