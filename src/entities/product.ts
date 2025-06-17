@@ -1,7 +1,6 @@
 import { Product } from "@/types/product";
 
-// Mock de exemplo
-export const products: Product[] = [
+export const productsMock: Product[] = [
   {
     name: "Peso Padrão Aço Inox F1 1mg",
     material: "aco_inox_f1",

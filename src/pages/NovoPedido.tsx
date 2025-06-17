@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Order } from "@/entities/order";
-import { Product } from "@/entities/product";
+import { Order } from "@/types/order";
+import { Product } from "@/types/product";
 import { Customer } from "@/types/customers";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,8 +15,8 @@ import OrderForm from "../components/pedidos/OrderForm.js";
 export default function NovoPedido() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [order, setOrder] = useState(null);
-  const [products, setProducts] = useState([]);
+  const [order, setOrder] = useState<Order[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -32,7 +32,7 @@ export default function NovoPedido() {
         ProductService.list("weight_in_grams"),
         CustomerService.list("razao_social")
       ]);
-      setProducts(productsData.filter(p => p.is_active));
+      setProducts(productsData.filter((p: Product) => p.is_active));
       setCustomers(customersData.filter(c => c.is_active));
 
       if (id) {

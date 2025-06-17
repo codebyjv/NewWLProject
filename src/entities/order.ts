@@ -1,7 +1,7 @@
 import { Order } from "@/types/order";
 
 // Mock de exemplo
-export const orders: Order[] = [
+export const ordersMock: Order[] = [
   {
     id: 1,
     order_number: "001",

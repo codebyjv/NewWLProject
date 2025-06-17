@@ -6,5 +6,5 @@ export interface Product {
   stock_quantity?: number;
   min_stock?: number;
   unit_price?: number;
-  is_active?: boolean;
+  is_active: boolean;
 }
