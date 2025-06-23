@@ -5,8 +5,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search } from "lucide-react";
 
-export default function CustomerFilters({ filters, onFilterChange }) {
-  const handleInputChange = (field, value) => {
+export default function CustomerFilters({ filters, onFilterChange }: CustomerFiltersProps) {
+  const handleInputChange = (field: keyof Filters, value: string) => {
     onFilterChange({ [field]: value });
   };
 
