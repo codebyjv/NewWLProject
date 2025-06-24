@@ -17,6 +17,7 @@ const [errors, setErrors] = useState<FormErrors>({});
 
 export default function CustomerForm({ customer, onSave, onCancel, isSaving }: CustomerFormProps) {
   const [formData, setFormData] = useState<CustomerFormValues>({
+    id: customer?.id || "",
     cpf_cnpj: customer?.cpf_cnpj || "",
     razao_social: customer?.razao_social || "",
     nome_fantasia: customer?.nome_fantasia || "",

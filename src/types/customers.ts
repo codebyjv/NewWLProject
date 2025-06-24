@@ -1,4 +1,5 @@
 interface FormErrors {
+  id?: string;
   cpf_cnpj?: string;
   razao_social?: string;
   nome_fantasia?: string;
@@ -66,6 +67,7 @@ interface ErrorDictionary {
 }
 
 interface CustomerFormValues {
+  id: string;
   cpf_cnpj: string;
   razao_social: string;
   nome_fantasia: string;
