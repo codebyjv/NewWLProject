@@ -1,5 +1,8 @@
 
 import React, { useState } from "react";
+
+import { CustomerFormProps } from "@/types/customerProps";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,10 +10,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
+
 import { Plus, Trash2 } from "lucide-react";
 
-export default function CustomerForm({ customer, onSave, onCancel, isSaving }) {
-  const [formData, setFormData] = useState({
+const [customer, setCustomer] = useState<Customer[]>([]);
+const [errors, setErrors] = useState<FormErrors>({});
+
+export default function CustomerForm({ customer, onSave, onCancel, isSaving }: CustomerFormProps) {
+  const [formData, setFormData] = useState<Customer>({
     cpf_cnpj: customer?.cpf_cnpj || "",
     razao_social: customer?.razao_social || "",
     nome_fantasia: customer?.nome_fantasia || "",
@@ -25,21 +32,16 @@ export default function CustomerForm({ customer, onSave, onCancel, isSaving }) {
       bairro: customer?.endereco?.bairro || "",
       complemento: customer?.endereco?.complemento || ""
     },
-    // FIX: Corrected iteration for contatos initialization to ensure at least one empty contact if array is empty or undefined
-    contatos: (customer?.contatos && customer.contatos.length > 0) ? customer.contatos : [{ nome: "", celular: "", email: "" }],
+    contatos: customer?.contatos?.length ? customer.contatos : [{ nome: "", celular: "", email: "" }],
     observacoes: customer?.observacoes || "",
-    is_active: customer?.is_active !== undefined ? customer.is_active : true
+    is_active: customer?.is_active ?? true
   });
 
-  // State to store validation errors
-  const [errors, setErrors] = useState({});
-
-  const handleInputChange = (field, value) => {
-    // Clear the error for the specific field when its value changes
+  const handleInputChange = (field: AllFields, value: any) => {
     setErrors(prev => {
       const newErrors = { ...prev };
-      // Determine the top-level field name for error clearing
-      const fieldName = field.includes('.') ? field.split('.')[0] : field; 
+      const fieldName = (field.includes('.') ? field.split('.')[0] : field) as keyof CustomerFormValues;
+      
       if (newErrors[fieldName]) {
         delete newErrors[fieldName];
       }
@@ -47,16 +49,35 @@ export default function CustomerForm({ customer, onSave, onCancel, isSaving }) {
     });
 
     if (field.includes('.')) {
-      const [parent, child] = field.split('.');
-      setFormData(prev => ({
-        ...prev,
-        [parent]: {
-          ...prev[parent],
-          [child]: value
+      const [parent, child] = field.split('.') as [keyof CustomerFormValues, string];
+      
+      setFormData(prev => {
+        if (parent === 'endereco') {
+          return {
+            ...prev,
+            endereco: {
+              ...prev.endereco,
+              [child as keyof Endereco]: value
+            }
+          };
+        } else if (parent === 'contatos') {
+          const [_, index, contactField] = field.split('.');
+          const contactIndex = parseInt(index);
+          
+          return {
+            ...prev,
+            contatos: (prev.contatos || []).map((contact, i) => 
+              i === contactIndex ? { ...contact, [contactField as keyof Contato]: value } : contact
+            )
+          };
         }
-      }));
+        return prev;
+      });
     } else {
-      setFormData(prev => ({ ...prev, [field]: value }));
+      setFormData(prev => ({ 
+        ...prev, 
+        [field as keyof CustomerFormValues]: value 
+      }));
     }
   };
 
