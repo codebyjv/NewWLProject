@@ -1,11 +1,16 @@
 import React from "react";
+
+import { RecentOrderProps } from "@/types/orderProps";
+import { Order } from "@/types/order";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
+
 import { ShoppingCart } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Skeleton } from "@/components/ui/skeleton";
 
 const statusColors = {
   pendente: "bg-amber-100 text-amber-800 border-amber-300",
@@ -23,7 +28,7 @@ const statusLabels = {
   cancelado: "Cancelado"
 };
 
-export default function RecentOrders({ orders, isLoading }) {
+export default function RecentOrders({ orders, isLoading }: RecentOrderProps) {
   if (isLoading) {
     return (
       <Card>

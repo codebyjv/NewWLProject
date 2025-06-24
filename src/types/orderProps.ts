@@ -1,7 +1,6 @@
 import { OrderService } from "@/services/OrderService";
 import { Order } from "@/types/order";
 import { Product } from "@/types/product";
-import { Customer } from "@/types/customers";
 
 export type OrderProps = {
   order: Order;
@@ -15,4 +14,9 @@ export interface OrderFormProps {
   onSave: (orderData: OrderService) => void;
   onCancel: () => void;
   isSaving: boolean;
+}
+
+export interface RecentOrderProps {
+  orders: Order[];
+  isLoading: boolean;
 }

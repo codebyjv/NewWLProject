@@ -31,7 +31,7 @@ export interface Order {
     value: number;
     due_date: string; // formato: "date"
   }[];
-  status?: "pendente" | "processando" | "enviado" | "entregue" | "cancelado";
+  status: "pendente" | "processando" | "enviado" | "entregue" | "cancelado";
   observations?: string;
   delete: boolean;
 }
