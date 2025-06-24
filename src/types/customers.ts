@@ -1,5 +1,25 @@
 interface FormErrors {
-  [key: string]: string;
+  cpf_cnpj?: string;
+  razao_social?: string;
+  nome_fantasia?: string;
+  tipo_contribuinte?: string;
+  ie_rg?: string;
+  cliente_desde?: string;
+  endereco?: {
+    cep?: string;
+    cidade_uf?: string;
+    logradouro?: string;
+    numero?: string;
+    bairro?: string;
+    complemento?: string;
+  };
+  contatos?: Array<{
+    nome?: string;
+    celular?: string;
+    email?: string;
+  }>;
+  observacoes?: string;
+  is_active?: string;
 }
 
 interface Endereco {

@@ -7,17 +7,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
 
 import { Plus, Trash2 } from "lucide-react";
 
-const [customer, setCustomer] = useState<Customer[]>([]);
 const [errors, setErrors] = useState<FormErrors>({});
 
 export default function CustomerForm({ customer, onSave, onCancel, isSaving }: CustomerFormProps) {
-  const [formData, setFormData] = useState<Customer>({
+  const [formData, setFormData] = useState<CustomerFormValues>({
     cpf_cnpj: customer?.cpf_cnpj || "",
     razao_social: customer?.razao_social || "",
     nome_fantasia: customer?.nome_fantasia || "",
@@ -81,10 +80,10 @@ export default function CustomerForm({ customer, onSave, onCancel, isSaving }: C
     }
   };
 
-  const handleContactChange = (index, field, value) => {
+  const handleContactChange = (index: number, field: keyof Contato, value: string) => {
     setFormData(prev => ({
       ...prev,
-      contatos: prev.contatos.map((contato, i) => 
+      contatos: prev.contatos.map((contato, i) =>
         i === index ? { ...contato, [field]: value } : contato
       )
     }));
@@ -97,24 +96,34 @@ export default function CustomerForm({ customer, onSave, onCancel, isSaving }: C
     }));
   };
 
-  const removeContact = (index) => {
+  const removeContact = (index: number) => {
     setFormData(prev => ({
       ...prev,
       contatos: prev.contatos.filter((_, i) => i !== index)
     }));
   };
 
-  // Function to validate the form data
-  const validateForm = () => {
-    let newErrors = {};
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
     let isValid = true;
 
+    // Validação tipo-safe
     if (!formData.cpf_cnpj.trim()) {
       newErrors.cpf_cnpj = "CPF/CNPJ é obrigatório.";
       isValid = false;
     }
+
     if (!formData.razao_social.trim()) {
       newErrors.razao_social = "Razão Social é obrigatória.";
+      isValid = false;
+    }
+
+    // Adicione outras validações conforme necessário
+    if (!formData.endereco.cep.trim()) {
+      newErrors.endereco = {
+        ...newErrors.endereco,
+        cep: "CEP é obrigatório."
+      };
       isValid = false;
     }
 
@@ -122,7 +131,7 @@ export default function CustomerForm({ customer, onSave, onCancel, isSaving }: C
     return isValid;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
     if (validateForm()) {
       onSave(formData);
@@ -273,7 +282,11 @@ export default function CustomerForm({ customer, onSave, onCancel, isSaving }: C
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Contatos</CardTitle>
-          <Button type="button" variant="outline" size="sm" onClick={addContact}>
+          <Button 
+            // type="button" (comentado para teste)
+            variant="outline" 
+            size="sm" 
+            onClick={addContact}>
             <Plus className="w-4 h-4 mr-2" />
             Adicionar Contato
           </Button>
@@ -285,8 +298,8 @@ export default function CustomerForm({ customer, onSave, onCancel, isSaving }: C
                 <h4 className="font-medium">Contato {index + 1}</h4>
                 {formData.contatos.length > 1 && (
                   <Button 
-                    type="button" 
-                    variant="ghost" 
+                    // type="button" (comentado para teste)
+                    variant="default" 
                     size="sm" 
                     onClick={() => removeContact(index)}
                   >
@@ -338,7 +351,7 @@ export default function CustomerForm({ customer, onSave, onCancel, isSaving }: C
               <Textarea 
                 id="observacoes" 
                 value={formData.observacoes} 
-                onChange={(e) => handleInputChange('observacoes', e.target.value)}
+                onChange={(e: any) => handleInputChange('observacoes', e.target.value)}
                 placeholder="Observações sobre o cliente..."
               />
             </div>
@@ -347,7 +360,7 @@ export default function CustomerForm({ customer, onSave, onCancel, isSaving }: C
               <Switch
                 id="is_active"
                 checked={formData.is_active}
-                onCheckedChange={(checked) => handleInputChange('is_active', checked)}
+                onCheckedChange={(checked: boolean) => handleInputChange('is_active', checked)}
               />
               <Label htmlFor="is_active">Cliente Ativo</Label>
             </div>
@@ -357,11 +370,14 @@ export default function CustomerForm({ customer, onSave, onCancel, isSaving }: C
 
       {/* Botões */}
       <div className="flex justify-end gap-4">
-        <Button type="button" variant="outline" onClick={onCancel}>
+        <Button 
+          // type="button" (comentado para teste)
+          variant="outline" 
+          onClick={onCancel}>
           Cancelar
         </Button>
         <Button 
-          type="submit" 
+          // type="submit" (comentado para teste) 
           disabled={isSaving}
           className="bg-red-600 hover:bg-red-700"
         >
