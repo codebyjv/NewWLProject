@@ -1,5 +1,10 @@
 import React from "react";
 
+interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
+  children: React.ReactNode;
+  className?: string;
+}
+
 export function Table({ children, className }: { children: React.ReactNode; className?: string }) {
   return <table className={`min-w-full divide-y divide-gray-200 ${className}`}>{children}</table>;
 }
@@ -8,8 +13,15 @@ export function TableHeader({ children, className }: { children: React.ReactNode
   return <thead className={`bg-gray-50 ${className}`}>{children}</thead>;
 }
 
-export function TableRow({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <tr className={`hover:bg-gray-100 ${className}`}>{children}</tr>;
+export function TableRow({ children, className, ...props }: TableRowProps) {
+  return (
+    <tr 
+      className={`hover:bg-gray-100 ${className}`}
+      {...props}
+    >
+      {children}
+    </tr>
+  );
 }
 
 export function TableHead({ children, className }: { children: React.ReactNode; className?: string }) {

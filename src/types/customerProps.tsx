@@ -12,3 +12,10 @@ export interface CustomerFormProps {
   isEditing?: boolean;
   // ... outras props
 }
+
+export interface CustomerTableProps {
+  customers: Customer[];
+  isLoading: boolean;
+  onSelectCustomer: (customer: Customer) => void;
+  selectedCustomer?: Customer | null;
+}

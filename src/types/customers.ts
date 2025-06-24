@@ -38,6 +38,7 @@ interface Contato {
 }
 
 interface Customer {
+  id: string;
   cpf_cnpj: string;
   razao_social: string;
   nome_fantasia: string;

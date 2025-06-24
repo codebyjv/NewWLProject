@@ -1,8 +1,12 @@
 import React from "react";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+
+import { CustomerTableProps } from "@/types/customerProps";
+
 import { Users } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -14,7 +18,7 @@ const tipoContribuinteLabels = {
   simples_nacional: "Simples Nacional"
 };
 
-export default function CustomerTable({ customers, isLoading, onSelectCustomer, selectedCustomer }) {
+export default function CustomerTable({ customers, isLoading, onSelectCustomer, selectedCustomer }: CustomerTableProps) {
   if (isLoading) {
     return (
       <Card>
@@ -67,14 +71,14 @@ export default function CustomerTable({ customers, isLoading, onSelectCustomer, 
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {customers.map((customer) => (
-                  <TableRow 
-                    key={customer.id}
-                    className={`cursor-pointer hover:bg-gray-50 transition-colors ${
-                      selectedCustomer?.id === customer.id ? 'bg-red-50 border-l-4 border-red-500' : ''
-                    }`}
-                    onClick={() => onSelectCustomer(customer)}
-                  >
+                {customers.map((customer: Customer) => (
+                    <TableRow 
+                      key={customer.id}
+                      className={`cursor-pointer hover:bg-gray-50 transition-colors ${
+                        selectedCustomer?.id === customer.id ? 'bg-red-50 border-l-4 border-red-500' : ''
+                      }`}
+                      onClick={() => onSelectCustomer(customer)}
+                    >
                     <TableCell>
                       <div>
                         <p className="font-medium">{customer.razao_social}</p>
