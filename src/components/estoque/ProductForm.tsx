@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from "react";
+
+import { Product } from "@/types/product";
+import { ProductFormData, ProductFormProps, MaterialType } from "@/types/product";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogClose,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 
@@ -19,23 +16,25 @@ const materialOptions = [
   { value: 'ferro_fundido_m1', label: 'Ferro Fundido M1' },
 ];
 
-export default function ProductForm({ product, onSave, onCancel }) {
-  const [formData, setFormData] = useState({
-    name: "",
-    material: "aco_inox_f1",
-    weight: "",
-    weight_in_grams: 0,
-    stock_quantity: 0,
-    min_stock: 5,
-    unit_price: 0,
-    is_active: true,
+export default function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
+  const [formData, setFormData] = useState<ProductFormData>({
+      name: product?.name || '',
+      material: product?.material || 'aco_inox_f1',
+      weight: product?.weight || '',
+      weight_in_grams: product?.weight_in_grams || 0,
+      stock_quantity: product?.stock_quantity || 0,
+      min_stock: product?.min_stock || 0,
+      unit_price: product?.unit_price || undefined,
+      is_active: product?.is_active ?? true,
+      id: product?.id || ''
   });
 
   useEffect(() => {
     if (product) {
       setFormData({
+        id: product.id || "",
         name: product.name || "",
-        material: product.material || "aco_inox_f1",
+        material: product.material || "",
         weight: product.weight || "",
         weight_in_grams: product.weight_in_grams || 0,
         stock_quantity: product.stock_quantity || 0,
@@ -45,6 +44,7 @@ export default function ProductForm({ product, onSave, onCancel }) {
       });
     } else {
        setFormData({
+        id: "0",
         name: "",
         material: "aco_inox_f1",
         weight: "",
@@ -57,16 +57,22 @@ export default function ProductForm({ product, onSave, onCancel }) {
     }
   }, [product]);
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+    setFormData(prev => ({ 
+      ...prev, 
+      [name]: type === 'checkbox' ? checked : value 
+    }));
   };
 
-  const handleSelectChange = (name, value) => {
-    setFormData(prev => ({ ...prev, [name]: value }));
+  const handleSelectChange = (name: keyof ProductFormData, value: string) => {
+    setFormData(prev => ({ 
+      ...prev, 
+      [name]: value as MaterialType
+    }));
   };
   
-  const parseWeight = (weightStr) => {
+  const parseWeight = (weightStr: string): number => {
     if (!weightStr) return 0;
     const value = parseFloat(weightStr.replace(',', '.'));
     const unit = weightStr.toLowerCase().replace(/[0-9,.]/g, '').trim();
@@ -85,19 +91,23 @@ export default function ProductForm({ product, onSave, onCancel }) {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const finalData = {
+    const finalData: ProductFormData = {
       ...formData,
+      id: String(formData.id),
       stock_quantity: Number(formData.stock_quantity),
+      material: formData.material as MaterialType,
       min_stock: Number(formData.min_stock),
-      unit_price: Number(formData.unit_price),
+      unit_price: formData.unit_price ? Number(formData.unit_price) : undefined,
       weight_in_grams: parseWeight(formData.weight)
     };
+    
     if (!finalData.name) {
       const materialLabel = materialOptions.find(opt => opt.value === finalData.material)?.label || '';
       finalData.name = `Peso Padrão ${materialLabel} ${finalData.weight}`;
     }
+    
     onSave(finalData);
   };
 
@@ -154,16 +164,24 @@ export default function ProductForm({ product, onSave, onCancel }) {
             <Switch
               id="is_active"
               checked={formData.is_active}
-              onCheckedChange={(checked) => handleSelectChange('is_active', checked)}
+              onCheckedChange={(checked) => handleSelectChange('is_active', checked ? 'true' : 'false')}
             />
             <Label htmlFor="is_active">Produto Ativo</Label>
           </div>
         
           <DialogFooter className="md:col-span-2 mt-4">
             <DialogClose asChild>
-              <Button type="button" variant="outline">Cancelar</Button>
+              <Button 
+                // type="button" 
+                variant="outline">
+                Cancelar
+              </Button>
             </DialogClose>
-            <Button type="submit" className="bg-red-600 hover:bg-red-700">Salvar Produto</Button>
+            <Button 
+              // type="submit" 
+              className="bg-red-600 hover:bg-red-700">
+              Salvar Produto
+              </Button>
           </DialogFooter>
         </form>
       </DialogContent>
