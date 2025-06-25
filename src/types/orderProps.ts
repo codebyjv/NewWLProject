@@ -1,6 +1,7 @@
 import { OrderService } from "@/services/OrderService";
 import { Order } from "@/types/order";
 import { Product } from "@/types/product";
+import { Customer } from "@/types/customers";
 
 export type OrderProps = {
   order: Order;
@@ -22,7 +23,7 @@ export interface RecentOrderProps {
 }
 
 export interface OrderDetailsProps {
-  order: Order;
+  order: Order | null;
   products: Product[];
   customers: Customer[];
   onDelete: (id: number) => void;

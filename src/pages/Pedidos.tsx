@@ -1,12 +1,11 @@
-
 import React, { useState, useEffect } from "react";
+
 import { Customer } from "@/types/customers";
 import { Order } from "@/types/order";
 import { OrderProps } from "@/types/orderProps"
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import {
   Search,
   Plus,
@@ -16,7 +15,6 @@ import {
   Download
 } from "lucide-react";
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import {
@@ -31,24 +29,29 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-import { OrdersTable, OrderFilters } from "@/components/pedidos";
+import { OrderFilters } from "@/components/pedidos";
 import OrderDetails from "../components/pedidos/OrderDetails.js";
 import { OrderService } from "../services/OrderService";
 import { CustomerService } from "../services/CustomerService";
-
+import OrdersTable from '@/components/pedidos/OrdersTable.js';
+import { Product } from "@/types/product";
+import { ProductService } from "../services/ProductService";
 
 export default function Pedidos() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
-  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState({
-    search: "",
-    dateFrom: "",
-    dateTo: "",
-    status: "all",
-    paymentMethod: "all"
+    search: '',
+    dateFrom: '',
+    dateTo: '',
+    status: '',
+    paymentMethod: '',
+    tipoContribuinte: 'all',
+    isActive: true
   });
 
   useEffect(() => {
@@ -75,6 +78,22 @@ export default function Pedidos() {
     }
     setIsLoading(false);
   };
+
+  useEffect(() => {
+    const loadInitialData = async () => {
+      try {
+        const [productsData, customersData] = await Promise.all([
+          ProductService.list(), 
+          CustomerService.list() 
+        ]);
+        setProducts(productsData);
+        setCustomers(customersData);
+      } catch (error) {
+        console.error("Erro ao carregar dados:", error);
+      }
+    };
+    loadInitialData();
+  }, []);
 
   const filterOrders = () => {
     let filtered = Array.isArray(orders) ? orders : [];
@@ -113,7 +132,15 @@ export default function Pedidos() {
     setFilteredOrders(filtered);
   };
 
-  const handleFilterChange = (newFilters: Filters) => {
+  const handleFilterChange = (newFilters: Partial<{
+    search: string;
+    dateFrom: string;
+    dateTo: string;
+    status: string;
+    paymentMethod: string;
+    tipoContribuinte: string;
+    isActive: boolean;
+  }>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
   };
 
@@ -295,15 +322,19 @@ export default function Pedidos() {
             <OrdersTable
               orders={filteredOrders}
               isLoading={isLoading}
-              onSelectOrder={setSelectedOrder}
+              onSelectOrder={(order) => setSelectedOrder(order)}
               selectedOrder={selectedOrder}
             />
           </div>
           <div>
-            <OrderDetails
-              order={selectedOrder}
-              onDelete={handleDeleteOrder}
-            />
+            {selectedOrder && (
+              <OrderDetails
+                order={selectedOrder}
+                products={products}
+                customers={customers}
+                onDelete={handleDeleteOrder}
+              />
+            )}
           </div>
         </div>
       </div>

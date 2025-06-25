@@ -19,6 +19,8 @@ interface OrderFiltersProps {
     dateTo: string;
     status: string;
     paymentMethod: string;
+    tipoContribuinte: string;
+    isActive: boolean;
   }>) => void;
 }
 
