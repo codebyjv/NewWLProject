@@ -1,5 +1,5 @@
 import * as React from "react";
-import cn from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 interface AlertDialogTriggerProps {
   children: React.ReactNode;
@@ -7,7 +7,7 @@ interface AlertDialogTriggerProps {
   onClick?: () => void;
 }
 
-type AlertDialogAction = {
+type AlertDialogActionProps = {
   children: React.ReactNode;
   className?: string;
   onClick?: () => void;
@@ -68,16 +68,17 @@ const AlertDialogFooter = ({ children }: { children: React.ReactNode }) => {
 
 const AlertDialogAction = ({ 
   children,
-  className 
-}: { 
-  children: React.ReactNode;
-  className?: string;
-}) => {
+  className,
+  onClick 
+}: AlertDialogActionProps) => {
   return (
-    <button className={cn(
-      "px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700",
-      className
-    )}>
+    <button 
+      className={cn(
+        "px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700",
+        className
+      )}
+      onClick={onClick}
+    >
       {children}
     </button>
   );
