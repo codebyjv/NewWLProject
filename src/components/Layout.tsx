@@ -14,7 +14,6 @@ import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
-  SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
@@ -25,6 +24,11 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Badge } from "@/components/ui/badge";
+
+interface LayoutProps {
+  children: React.ReactNode;
+  currentPageName?: string;
+}
 
 const navigationItems = [
   {
@@ -49,7 +53,7 @@ const navigationItems = [
   },
 ];
 
-export default function Layout({ children, currentPageName }) {
+export default function Layout({ children, currentPageName }: LayoutProps) {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
@@ -102,7 +106,7 @@ export default function Layout({ children, currentPageName }) {
                 <SidebarGroupLabel className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 py-2">
                   Menu Principal
                 </SidebarGroupLabel>
-                <SidebarGroupContent>
+                <SidebarContent>
                   <SidebarMenu className="space-y-1">
                     {navigationItems.map((item) => (
                       <SidebarMenuItem key={item.title}>
@@ -122,14 +126,14 @@ export default function Layout({ children, currentPageName }) {
                       </SidebarMenuItem>
                     ))}
                   </SidebarMenu>
-                </SidebarGroupContent>
+                </SidebarContent>
               </SidebarGroup>
 
               <SidebarGroup className="mt-6">
                 <SidebarGroupLabel className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 py-2">
                   Alertas
                 </SidebarGroupLabel>
-                <SidebarGroupContent>
+                <SidebarContent>
                   <div className="px-3 py-2">
                     <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
                       <Bell className="w-4 h-4 text-amber-600" />
@@ -142,7 +146,7 @@ export default function Layout({ children, currentPageName }) {
                       </Badge>
                     </div>
                   </div>
-                </SidebarGroupContent>
+                </SidebarContent>
               </SidebarGroup>
             </SidebarContent>
 
