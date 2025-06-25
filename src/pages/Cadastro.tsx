@@ -1,11 +1,9 @@
 
 import React, { useState, useEffect } from "react";
 
-import { Customer } from "@/types/customers";
 import { CustomerService } from "@/services/CustomerService";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import CustomerTable from "../components/cadastros/CustomerTable";
 import CustomerFilters from "../components/cadastros/CustomerFilters";
@@ -13,17 +11,15 @@ import CustomerDetails from "../components/cadastros/CustomerDetails";
 
 import { Search, Plus, Users, Download, Filter } from "lucide-react";
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 export default function Cadastros() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
-  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<Filters>({
     search: "",
     tipoContribuinte: "all",
     isActive: "all"
@@ -77,8 +73,14 @@ export default function Cadastros() {
     setFilteredCustomers(filtered);
   };
 
-  const handleFilterChange = (newFilters: Filters) => {
-    setFilters(prev => ({ ...prev, ...newFilters }));
+  const handleFilterChange = (newFilters: Partial<Filters>) => {
+    setFilters(prev => ({ 
+      ...prev, 
+      ...newFilters,
+      tipoContribuinte: newFilters.tipoContribuinte
+        ? newFilters.tipoContribuinte
+        : prev.tipoContribuinte
+    }));
   };
 
   const handleDeleteCustomer = async (id: Number) => {
@@ -210,7 +212,13 @@ export default function Cadastros() {
         </div>
 
         {/* Filters */}
-        <CustomerFilters filters={filters} onFilterChange={handleFilterChange} />
+        <CustomerFilters 
+          filters={filters}
+          onFilterChange={handleFilterChange} 
+          search={filters.search}
+          tipoContribuinte={filters.tipoContribuinte}
+          isActive={filters.isActive}
+        />
 
         {/* Main Content */}
         <div className="grid lg:grid-cols-3 gap-6">
@@ -218,7 +226,7 @@ export default function Cadastros() {
             <CustomerTable 
               customers={filteredCustomers} 
               isLoading={isLoading}
-              onSelectCustomer={setSelectedCustomer}
+              onSelectCustomer={(customer) => setSelectedCustomer(customer)}
               selectedCustomer={selectedCustomer}
             />
           </div>

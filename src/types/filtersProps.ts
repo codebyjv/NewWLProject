@@ -1,4 +1,8 @@
 interface CustomerFiltersProps {
   filters: Filters;
-  onFilterChange: (filters: Partial<Filters>) => void;
+  search: string;
+  tipoContribuinte: "all" | "pessoa_fisica" | "pessoa_juridica" | "mei" | "simples_nacional" | undefined;
+  isActive: string;
+  onFilterChange: (newFilters: Partial<Filters>) => void;
 }
+
