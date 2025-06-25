@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect } from "react";
-import Layout from "@/components/Layout";
 
 import { CustomerService } from "@/services/CustomerService";
 
@@ -143,105 +142,103 @@ export default function Cadastros() {
   const inactiveCustomers = safeCustomers.filter(c => !c.is_active).length;
 
   return (
-    <Layout currentPageName="Cadastros">
-      <div className="p-6 bg-gray-50 min-h-screen">
-        <div className="max-w-7xl mx-auto space-y-6">
-          {/* Header */}
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Central de Cadastros</h1>
-              <p className="text-gray-600 mt-1">Gerencie todos os clientes cadastrados</p>
-            </div>
-            <div className="flex gap-3 w-full lg:w-auto">
-              <Button 
-                variant="outline"
-                onClick={exportToCSV}
-                disabled={filteredCustomers.length === 0}
-                className="flex-1 lg:flex-none"
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Exportar CSV
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Central de Cadastros</h1>
+            <p className="text-gray-600 mt-1">Gerencie todos os clientes cadastrados</p>
+          </div>
+          <div className="flex gap-3 w-full lg:w-auto">
+            <Button 
+              variant="outline"
+              onClick={exportToCSV}
+              disabled={filteredCustomers.length === 0}
+              className="flex-1 lg:flex-none"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Exportar CSV
+            </Button>
+            <Link to={createPageUrl("NovoCliente")} className="flex-1 lg:flex-none">
+              <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
+                <Plus className="w-4 h-4 mr-2" />
+                Novo Cliente
               </Button>
-              <Link to={createPageUrl("NovoCliente")} className="flex-1 lg:flex-none">
-                <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Novo Cliente
-                </Button>
-              </Link>
-            </div>
+            </Link>
           </div>
+        </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <Users className="w-8 h-8 text-blue-600" />
-                  <div>
-                    <p className="text-sm text-gray-600">Total de Clientes</p>
-                    <p className="text-2xl font-bold">{customers.length}</p>
-                  </div>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <Users className="w-8 h-8 text-blue-600" />
+                <div>
+                  <p className="text-sm text-gray-600">Total de Clientes</p>
+                  <p className="text-2xl font-bold">{customers.length}</p>
                 </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                    <span className="text-green-600 font-bold">✓</span>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Clientes Ativos</p>
-                    <p className="text-2xl font-bold text-green-600">{activeCustomers}</p>
-                  </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                  <span className="text-green-600 font-bold">✓</span>
                 </div>
-              </CardContent>
-            </Card>
+                <div>
+                  <p className="text-sm text-gray-600">Clientes Ativos</p>
+                  <p className="text-2xl font-bold text-green-600">{activeCustomers}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                    <span className="text-gray-600 font-bold">✕</span>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Clientes Inativos</p>
-                    <p className="text-2xl font-bold text-gray-600">{inactiveCustomers}</p>
-                  </div>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                  <span className="text-gray-600 font-bold">✕</span>
                 </div>
-              </CardContent>
-            </Card>
+                <div>
+                  <p className="text-sm text-gray-600">Clientes Inativos</p>
+                  <p className="text-2xl font-bold text-gray-600">{inactiveCustomers}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Filters */}
+        <CustomerFilters 
+          filters={filters}
+          onFilterChange={handleFilterChange} 
+          search={filters.search}
+          tipoContribuinte={filters.tipoContribuinte}
+          isActive={filters.isActive}
+        />
+
+        {/* Main Content */}
+        <div className="grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <CustomerTable 
+              customers={filteredCustomers} 
+              isLoading={isLoading}
+              onSelectCustomer={(customer) => setSelectedCustomer(customer)}
+              selectedCustomer={selectedCustomer}
+            />
           </div>
-
-          {/* Filters */}
-          <CustomerFilters 
-            filters={filters}
-            onFilterChange={handleFilterChange} 
-            search={filters.search}
-            tipoContribuinte={filters.tipoContribuinte}
-            isActive={filters.isActive}
-          />
-
-          {/* Main Content */}
-          <div className="grid lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
-              <CustomerTable 
-                customers={filteredCustomers} 
-                isLoading={isLoading}
-                onSelectCustomer={(customer) => setSelectedCustomer(customer)}
-                selectedCustomer={selectedCustomer}
-              />
-            </div>
-            <div>
-              <CustomerDetails 
-                customer={selectedCustomer}
-                onDelete={handleDeleteCustomer}
-              />
-            </div>
+          <div>
+            <CustomerDetails 
+              customer={selectedCustomer}
+              onDelete={handleDeleteCustomer}
+            />
           </div>
         </div>
       </div>
-    </Layout>
+    </div>
   );
 }
