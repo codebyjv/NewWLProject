@@ -1,8 +1,12 @@
 import React from "react";
+
+import { TopProductsProps } from "@/types/dashboardProps";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Package, AlertTriangle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+
+import { Package, AlertTriangle } from "lucide-react";
 
 const materialLabels = {
   aco_inox_f1: "Aço Inox F1",
@@ -16,7 +20,7 @@ const materialColors = {
   ferro_fundido_m1: "bg-gray-100 text-gray-800 border-gray-300"
 };
 
-export default function TopProducts({ products, isLoading }) {
+export default function TopProducts({ products, isLoading }: TopProductsProps) {
   if (isLoading) {
     return (
       <Card>
