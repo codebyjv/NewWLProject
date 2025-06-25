@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import { ProductService } from "@/services/ProductService"
-import { Product } from "@/types/product";
+import { Product, ProductFormData } from "@/types/product";
 import { ProductCardProps } from "@/types/productsProps";
 
 import { Button } from "@/components/ui/button";
@@ -20,8 +20,9 @@ export default function Estoque() {
   const [materialFilter, setMaterialFilter] = useState("all");
   const [stockFilter, setStockFilter] = useState("all");
   const [showForm, setShowForm] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [editingProduct, setEditingProduct] = useState<ProductFormData | undefined>();
   const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     loadProducts();
@@ -68,18 +69,36 @@ export default function Estoque() {
     setFilteredProducts(filtered);
   };
 
-  const handleSaveProduct = async (productData: Product) => {
+  const convertFormDataToProduct = (formData: ProductFormData): Product => {
+    return {
+      id: formData.id || '', // Forneça um valor padrão ou gere um novo ID se for criação
+      name: formData.name,
+      material: formData.material,
+      weight: formData.weight,
+      weight_in_grams: formData.weight_in_grams,
+      stock_quantity: formData.stock_quantity,
+      min_stock: formData.min_stock,
+      unit_price: formData.unit_price,
+      is_active: formData.is_active,
+    };
+  };
+
+  const handleSaveProduct = async (formData: ProductFormData) => {
+    setIsSaving(true);
     try {
-      if (editingProduct) {
-        await ProductService.update(editingProduct.id, productData);
+      const productData = convertFormDataToProduct(formData);
+      if (formData.id) {
+        await ProductService.update(formData.id, productData);
       } else {
         await ProductService.create(productData);
       }
       setShowForm(false);
-      setEditingProduct(null);
+      setEditingProduct(undefined);
       loadProducts();
     } catch (error) {
       console.error("Erro ao salvar produto:", error);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -263,8 +282,9 @@ export default function Estoque() {
             onSave={handleSaveProduct}
             onCancel={() => {
               setShowForm(false);
-              setEditingProduct(null);
+              setEditingProduct(undefined);
             }}
+            isSaving={isSaving}
           />
         )}
       </div>

@@ -13,7 +13,7 @@ export interface Product {
 export type MaterialType = "aco_inox_f1" | "aco_inox_m1" | "ferro_fundido_m1";
 
 export interface ProductFormData {
-  id?: string;
+  id: string;
   name: string;
   material: MaterialType;
   weight: string;
@@ -25,7 +25,7 @@ export interface ProductFormData {
 }
 
 export interface ProductFormProps {
-  product?: ProductFormData;
+  product: ProductFormData | undefined;
   onSave: (product: ProductFormData) => void;
   onCancel: () => void;
   isSaving: boolean;
