@@ -1,4 +1,4 @@
-interface FormErrors {
+export interface FormErrors {
   id?: string;
   cpf_cnpj?: string;
   razao_social?: string;
@@ -23,7 +23,7 @@ interface FormErrors {
   is_active?: string;
 }
 
-interface Endereco {
+export interface Endereco {
   cep: string;
   cidade_uf: string;
   logradouro: string;
@@ -32,13 +32,13 @@ interface Endereco {
   complemento?: string;
 }
 
-interface Contato {
+export interface Contato {
   nome: string;
   celular: string;
   email: string;
 }
 
-interface Customer {
+export interface Customer {
   id: string;
   cpf_cnpj: string;
   razao_social: string;
@@ -52,7 +52,7 @@ interface Customer {
   is_active: boolean;
 }
 
-interface CustomerFormData extends Omit<Customer, 'contatos'> {
+export interface CustomerFormData extends Omit<Customer, 'contatos'> {
   contatos: Contato[];
 }
 
@@ -66,7 +66,7 @@ interface ErrorDictionary {
   [key: string]: string;
 }
 
-interface CustomerFormValues {
+export interface CustomerFormValues {
   id: string;
   cpf_cnpj: string;
   razao_social: string;
