@@ -1,0 +1,9 @@
+{
+  "css.customData": [".vscode/tailwind.json"],
+  "tailwindCSS.includeLanguages": {
+    "plaintext": "html"
+  },
+  "files.associations": {
+    "*.css": "postcss"
+  }
+}
