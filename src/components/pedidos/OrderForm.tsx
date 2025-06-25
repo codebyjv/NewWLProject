@@ -11,25 +11,28 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 
+import { OrderFormProps } from "@/types/orderProps";
+import { OrderFormData, OrderItem, Installment } from "@/types/order";
+
 import { Plus, Trash2, Search, Check, ChevronsUpDown } from "lucide-react";
 import { addDays, format as formatDate } from "date-fns";
 
-export default function OrderForm({ order, products = [], customers = [], onSave, onCancel, isSaving }) {
-  const [formData, setFormData] = useState({
-    customer_cpf_cnpj: "",
-    customer_name: "",
-    sale_date: new Date().toISOString().split('T')[0],
-    seller: "",
-    payment_method: "",
-    observations: "",
-    items: [],
-    subtotal: 0,
-    discount_total: 0,
-    shipping_cost: 0,
-    additional_cost: 0,
-    tax_cost: 0,
-    installments: [],
-    total_amount: 0
+export default function OrderForm({ order, products = [], customers = [], onSave, onCancel, isSaving }: OrderFormProps) {
+  const [formData, setFormData] = useState<OrderFormData>({
+      customer_cpf_cnpj: "",
+      customer_name: "",
+      sale_date: new Date().toISOString().split('T')[0],
+      seller: "",
+      payment_method: "",
+      observations: "",
+      items: [],
+      subtotal: 0,
+      discount_total: 0,
+      shipping_cost: 0,
+      additional_cost: 0,
+      tax_cost: 0,
+      installments: [],
+      total_amount: 0
   });
 
   const [itemForm, setItemForm] = useState({
@@ -50,12 +53,23 @@ export default function OrderForm({ order, products = [], customers = [], onSave
   useEffect(() => {
     if (order) {
       setFormData({
-        ...order,
+        customer_cpf_cnpj: order.customer_cpf_cnpj || "",
+        customer_name: order.customer_name || "",
         sale_date: order.sale_date ? new Date(order.sale_date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+        seller: order.seller || "",
+        payment_method: order.payment_method || "",
+        observations: order.observations || "",
         items: Array.isArray(order.items) ? order.items : [],
-        installments: Array.isArray(order.installments) ? order.installments : []
+        subtotal: order.subtotal || 0,
+        discount_total: order.discount_total || 0,
+        shipping_cost: order.shipping_cost || 0,
+        additional_cost: order.additional_cost || 0,
+        tax_cost: order.tax_cost || 0,
+        installments: Array.isArray(order.installments) ? order.installments : [],
+        total_amount: order.total_amount || 0
       });
-      if(order.installments && order.installments.length > 0) {
+
+      if (order.installments && order.installments.length > 0) {
         setNumInstallments(order.installments.length);
       } else {
         setNumInstallments(1);
@@ -89,7 +103,7 @@ export default function OrderForm({ order, products = [], customers = [], onSave
     }
   };
 
-  const handleInputChange = (field, value) => {
+  const handleInputChange = (field: string, value: string | number) => {
     setFormData(prev => {
       const updated = { ...prev, [field]: value };
       if (field === 'customer_cpf_cnpj') {
@@ -104,7 +118,7 @@ export default function OrderForm({ order, products = [], customers = [], onSave
     });
   };
 
-  const handleItemChange = (field, value) => {
+  const handleItemChange = (field: string, value: string | number) => {
     setItemForm(prev => ({ ...prev, [field]: value }));
   };
 
@@ -138,7 +152,7 @@ export default function OrderForm({ order, products = [], customers = [], onSave
     });
   };
 
-  const removeItem = (index) => {
+  const removeItem = (index: number) => {
     setFormData(prev => ({
       ...prev,
       items: prev.items.filter((_, i) => i !== index)
@@ -155,7 +169,7 @@ export default function OrderForm({ order, products = [], customers = [], onSave
     }, 0);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     onSave(formData);
   };
@@ -182,7 +196,7 @@ export default function OrderForm({ order, products = [], customers = [], onSave
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  role="combobox"
+                  // role="combobox"
                   aria-expanded={customerSearchOpen}
                   className="w-full justify-between"
                 >
@@ -383,7 +397,9 @@ export default function OrderForm({ order, products = [], customers = [], onSave
               />
             </div>
             
-            <Button type="button" onClick={addItem} className="bg-red-600 hover:bg-red-700">
+            <Button 
+              // type="button" 
+              onClick={addItem} className="bg-red-600 hover:bg-red-700">
               <Plus className="w-4 h-4 mr-2" />
               Adicionar
             </Button>
@@ -406,7 +422,7 @@ export default function OrderForm({ order, products = [], customers = [], onSave
                   <TableHead>Preço Un.</TableHead>
                   <TableHead>Desconto</TableHead>
                   <TableHead>Total</TableHead>
-                  <TableHead></TableHead>
+                  <TableHead>Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -415,10 +431,13 @@ export default function OrderForm({ order, products = [], customers = [], onSave
                     <TableCell>{item.product_name}</TableCell>
                     <TableCell>{item.quantity}</TableCell>
                     <TableCell>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.unit_price)}</TableCell>
-                    <TableCell>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.discount)}</TableCell>
+                    <TableCell>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.discount || 0)}</TableCell>
                     <TableCell className="font-bold">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.total_price)}</TableCell>
                     <TableCell>
-                      <Button variant="ghost" size="icon" onClick={() => removeItem(index)}>
+                      <Button 
+                        variant="default" 
+                        size="sm" 
+                        onClick={() => removeItem(index)}>
                         <Trash2 className="w-4 h-4 text-red-500" />
                       </Button>
                     </TableCell>
@@ -515,11 +534,14 @@ export default function OrderForm({ order, products = [], customers = [], onSave
 
       {/* Botões */}
       <div className="flex justify-end gap-4">
-        <Button type="button" variant="outline" onClick={onCancel}>
+        <Button 
+          // type="button" 
+          variant="outline" 
+          onClick={onCancel}>
           Cancelar
         </Button>
         <Button 
-          type="submit" 
+          // type="submit" 
           disabled={isSaving || formData.items.length === 0 || !formData.customer_cpf_cnpj || !formData.seller || !formData.payment_method}
           className="bg-red-600 hover:bg-red-700"
         >
