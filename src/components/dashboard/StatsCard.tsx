@@ -1,9 +1,13 @@
 import React from "react";
+
+import { StatsCardProps } from "@/types/dashboardProps";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+
 import { AlertTriangle } from "lucide-react";
 
-export default function StatsCard({ title, value, icon: Icon, color, isLoading, alert }) {
+export default function StatsCard({ title, value, icon: Icon, color, isLoading, alert }: StatsCardProps) {
   const colorClasses = {
     blue: "text-blue-600 bg-blue-100",
     green: "text-green-600 bg-green-100",
