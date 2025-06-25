@@ -1,25 +1,19 @@
 
 import React, { useState } from "react";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, } from "@/components/ui/alert-dialog";
+
+import { OrderDetailsProps } from "@/types/orderProps";
+
 import { FileText, User, Calendar, CreditCard, Edit, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Button } from "@/components/ui/button";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 
 const statusColors = {
   pendente: "bg-amber-100 text-amber-800 border-amber-300",
@@ -44,7 +38,7 @@ const paymentLabels = {
   cartao_debito: "Cartão de Débito"
 };
 
-export default function OrderDetails({ order, onDelete }) {
+export default function OrderDetails({ order, onDelete }: OrderDetailsProps) {
   if (!order) {
     return (
       <Card>
@@ -90,7 +84,13 @@ export default function OrderDetails({ order, onDelete }) {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => onDelete(order.id)} className="bg-red-600 hover:bg-red-700">
+                  <AlertDialogAction 
+                    {...{
+                      // @ts-ignore - Forçando a passagem do onClick
+                      onClick: () => onDelete(order.id),
+                    }}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
                     Sim, excluir
                   </AlertDialogAction>
                 </AlertDialogFooter>
@@ -206,31 +206,56 @@ export default function OrderDetails({ order, onDelete }) {
             {order.subtotal && (
               <div className="flex justify-between">
                 <span>Subtotal:</span>
-                <span>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(order.subtotal)}</span>
+                <span>
+                  {new Intl.NumberFormat('pt-BR', { 
+                    style: 'currency', 
+                    currency: 'BRL' 
+                  }).format(order.subtotal || 0)}
+                </span>
               </div>
             )}
-            {order.discount_total > 0 && (
+            {order.discount_total && order.discount_total > 0 && (
               <div className="flex justify-between text-red-600">
                 <span>Desconto:</span>
-                <span>-{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(order.discount_total)}</span>
+                <span>
+                  -{new Intl.NumberFormat('pt-BR', { 
+                    style: 'currency', 
+                    currency: 'BRL' 
+                  }).format(order.discount_total || 0)}
+                </span>
               </div>
             )}
-            {order.shipping_cost > 0 && (
+            {order.shipping_cost && order.shipping_cost > 0 && (
               <div className="flex justify-between">
                 <span>Frete:</span>
-                <span>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(order.shipping_cost)}</span>
+                <span>
+                  {new Intl.NumberFormat('pt-BR', { 
+                    style: 'currency', 
+                    currency: 'BRL' 
+                  }).format(order.shipping_cost || 0)}
+                </span>
               </div>
             )}
-            {order.additional_cost > 0 && (
+            {order.additional_cost && order.additional_cost > 0 && (
               <div className="flex justify-between">
                 <span>Acréscimo:</span>
-                <span>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(order.additional_cost)}</span>
+                <span>
+                  {new Intl.NumberFormat('pt-BR', { 
+                    style: 'currency', 
+                    currency: 'BRL' 
+                  }).format(order.additional_cost || 0)}
+                </span>
               </div>
             )}
-            {order.tax_cost > 0 && (
+            {order.tax_cost && order.tax_cost > 0 && (
               <div className="flex justify-between">
                 <span>Impostos:</span>
-                <span>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(order.tax_cost)}</span>
+                <span>
+                  {new Intl.NumberFormat('pt-BR', { 
+                    style: 'currency', 
+                    currency: 'BRL' 
+                  }).format(order.tax_cost || 0)}
+                </span>
               </div>
             )}
             <Separator />

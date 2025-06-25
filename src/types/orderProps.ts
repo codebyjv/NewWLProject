@@ -20,3 +20,10 @@ export interface RecentOrderProps {
   orders: Order[];
   isLoading: boolean;
 }
+
+export interface OrderDetailsProps {
+  order: Order;
+  products: Product[];
+  customers: Customer[];
+  onDelete: (id: number) => void;
+}
