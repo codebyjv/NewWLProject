@@ -4,7 +4,7 @@ export interface StatsCardProps {
     icon: React.ElementType;
     color: "blue" | "green" | "purple" | "red" | "amber";
     isLoading?: boolean;
-    alert?: boolean;
+    alert?: string | boolean;
 }
 
 export interface TopProductsProps {
