@@ -16,6 +16,8 @@ export default function StatsCard({ title, value, icon: Icon, color, isLoading, 
     amber: "text-amber-600 bg-amber-100"
   };
 
+  colorClasses[color as keyof typeof colorClasses] ?? "bg-gray-100 text-gray-600";
+
   if (isLoading) {
     return (
       <Card>
@@ -36,7 +38,7 @@ export default function StatsCard({ title, value, icon: Icon, color, isLoading, 
     <Card className={`transition-all duration-200 hover:shadow-md ${alert ? 'ring-2 ring-red-200 bg-red-50' : ''}`}>
       <CardContent className="p-4">
         <div className="flex items-center gap-3">
-          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${colorClasses[color]}`}>
+          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${colorClasses}`}>
             <Icon className="w-5 h-5" />
           </div>
           <div>

@@ -68,8 +68,11 @@ export default function TopProducts({ products, isLoading }: TopProductsProps) {
               <div key={product.id} className="flex justify-between items-center p-3 border border-red-200 bg-red-50 rounded-lg">
                 <div>
                   <p className="font-medium text-red-900">{product.weight}</p>
-                  <Badge className={materialColors[product.material]} variant="outline">
-                    {materialLabels[product.material]}
+                  <Badge 
+                    className={materialColors[product.material as keyof typeof materialColors] ?? "bg-gray-100 text-gray-800 border-gray-300"}
+                    variant="outline"
+                    >
+                    {materialLabels[product.material as keyof typeof materialLabels] ?? "Material Desconhecido"}
                   </Badge>
                 </div>
                 <div className="text-right">
