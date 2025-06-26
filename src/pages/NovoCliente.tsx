@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import { Customer } from "@/types/customers";
-import { CustomerService } from "@/services/CustomerService.js"
+import { CustomerService } from "@/services/CustomerService"
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,12 +10,12 @@ import { ArrowLeft, Save } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 
-import CustomerForm from "../components/cadastros/CustomerForm.js";
+import CustomerForm from "../components/cadastros/CustomerForm";
 
 export default function NovoCliente() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [customer, setCustomer] = useState<Customer | null>(null);
+  const [customer, setCustomer] = useState<Customer | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 

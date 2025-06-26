@@ -9,6 +9,7 @@ import CustomerTable from "../components/cadastros/CustomerTable";
 import CustomerFilters from "../components/cadastros/CustomerFilters";
 import CustomerDetails from "../components/cadastros/CustomerDetails";
 import { Customer } from "@/types/customers";
+import { Filters } from "@/types/filters";
 
 import { Search, Plus, Users, Download, Filter } from "lucide-react";
 import { format } from "date-fns";

@@ -16,8 +16,8 @@ function App() {
         <Route path="/pedidos" element={<Pedidos />} />
         <Route path="/estoque" element={<Estoque />} />
         <Route path="/cadastro" element={<Cadastro />} />
-        <Route path="/novo-cliente" element={<NovoCliente />} />
-        <Route path="/novo-pedido" element={<NovoPedido />} />
+        {/* <Route path="/novo-cliente" element={<NovoCliente />} />
+        <Route path="/novo-pedido" element={<NovoPedido />} /> */}
       </Routes>
     </Layout>
   );

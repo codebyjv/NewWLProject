@@ -1,4 +1,4 @@
-interface Filters {
+export interface Filters {
   search: string;
   tipoContribuinte: 'all' | 'pessoa_fisica' | 'pessoa_juridica' | 'mei' | 'simples_nacional';
   isActive: 'all' | 'true' | 'false';
