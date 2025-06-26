@@ -17,7 +17,7 @@ function App() {
         <Route path="/estoque" element={<Estoque />} />
         <Route path="/cadastros" element={<Cadastro />} />
         <Route path="/novo-cliente" element={<NovoCliente />} />
-        {/* <Route path="/novo-pedido" element={<NovoPedido />} /> */}
+        <Route path="/novo-pedido" element={<NovoPedido />} />
       </Routes>
     </Layout>
   );

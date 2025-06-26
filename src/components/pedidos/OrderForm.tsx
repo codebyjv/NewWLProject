@@ -18,12 +18,12 @@ import { Plus, Trash2, Search, Check, ChevronsUpDown } from "lucide-react";
 import { addDays, format as formatDate } from "date-fns";
 
 export default function OrderForm({ order, products = [], customers = [], onSave, onCancel, isSaving }: OrderFormProps) {
-  const [formData, setFormData] = useState<OrderFormData>({
+  const [formData, setFormData] = useState<Partial<OrderFormData>>({
       customer_cpf_cnpj: "",
       customer_name: "",
       sale_date: new Date().toISOString().split('T')[0],
       seller: "",
-      payment_method: "",
+      payment_method: "pix",
       observations: "",
       items: [],
       subtotal: 0,

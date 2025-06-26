@@ -52,11 +52,14 @@ export interface Installment {
 }
 
 export interface OrderFormData {
+  id: number;
+  created_date: string;
   customer_cpf_cnpj: string;
   customer_name: string;
+  status: "pendente" | "processando" | "enviado" | "entregue" | "cancelado"
   sale_date: string;
   seller: string;
-  payment_method: string;
+  payment_method: "boleto_bancario" | "pix" | "cartao_credito" | "cartao_debito"
   observations: string;
   items: OrderItem[];
   subtotal: number;
@@ -66,4 +69,5 @@ export interface OrderFormData {
   tax_cost: number;
   installments: Installment[];
   total_amount: number;
+  delete: boolean;
 }

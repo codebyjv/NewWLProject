@@ -10,7 +10,7 @@ import { createPageUrl } from "@/utils";
 import { ProductService } from '@/services/ProductService';
 import { CustomerService } from '@/services/CustomerService';
 import { OrderService } from '@/services/OrderService';
-import { OrderFormProps } from '@/types/orderProps';
+import OrderForm from "@/components/pedidos/OrderForm";
 
 export default function NovoPedido() {
   const navigate = useNavigate();
@@ -73,23 +73,6 @@ export default function NovoPedido() {
     setIsSaving(false);
   };
 
-  const OrderForm = ({ order, products, customers, onSave, onCancel, isSaving}: OrderFormProps) => {
-    if (!order) return null;
-
-    return (
-      <form onSubmit={() => onSave(order)}>
-        {/* Campos do formulário aqui */}
-
-        <button type="submit" disabled={isSaving}>
-          {isSaving ? "Salvando..." : "Salvar"}
-        </button>
-        <button type="button" onClick={onCancel}>
-          Cancelar
-        </button>
-      </form>
-    );
-  };
-
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="max-w-4xl mx-auto space-y-6">
@@ -122,7 +105,7 @@ export default function NovoPedido() {
             {isLoading ? (
               <div className="space-y-4">
                 {Array(5).fill(0).map((_, i) => (
-                  <div key={i} className="h-10 bg-gray-200 rounded animate-pulse"></div>
+                  <div key={i} className="h-10 bg-gray-200 rounded animate-pulse" />
                 ))}
               </div>
             ) : (

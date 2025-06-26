@@ -12,7 +12,7 @@ export interface OrderFormProps {
   order: Order | null;
   products: Product[];
   customers: Customer[];
-  onSave: (orderData: OrderService) => void;
+  onSave: (orderData: Order) => void;
   onCancel: () => void;
   isSaving: boolean;
 }
