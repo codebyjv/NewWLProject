@@ -19,6 +19,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Customer } from "@/types/customers";
 
 const tipoContribuinteLabels = {
   pessoa_fisica: "Pessoa Física",
@@ -28,7 +29,7 @@ const tipoContribuinteLabels = {
 };
 
 interface CustomerDetailsProps {
-  customer: any; // Replace 'any' with the actual type of 'customer'
+  customer: Customer | null;
   onDelete: (id: number) => void;
 }
 
@@ -38,8 +39,8 @@ const EditIcon = Edit as React.ComponentType<React.SVGProps<SVGSVGElement>>;
 const FileTextIcon = FileText as React.ComponentType<React.SVGProps<SVGSVGElement>>;
 const MapPinIcon = MapPin as React.ComponentType<React.SVGProps<SVGSVGElement>>;
 const PhoneIcon = Phone as React.ComponentType<React.SVGProps<SVGSVGElement>>;
-const MailIcon = Phone as React.ComponentType<React.SVGProps<SVGSVGElement>>;
-const CalendarIcon = Phone as React.ComponentType<React.SVGProps<SVGSVGElement>>;
+const MailIcon = Mail as React.ComponentType<React.SVGProps<SVGSVGElement>>;
+const CalendarIcon = Calendar as React.ComponentType<React.SVGProps<SVGSVGElement>>;
 
 export default function CustomerDetails({ customer, onDelete }: CustomerDetailsProps) {
   if (!customer) {
@@ -61,8 +62,7 @@ export default function CustomerDetails({ customer, onDelete }: CustomerDetailsP
     );
   }
 
-  // Helper to safely format dates, returning 'N/A' or 'Data Inválida' for invalid dates
-  const safelyFormatDate = (dateString: string, formatString: string) => {
+  const safelyFormatDate = (dateString: string | undefined, formatString: string) => {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return 'Data Inválida';
@@ -97,7 +97,7 @@ export default function CustomerDetails({ customer, onDelete }: CustomerDetailsP
                     <AlertDialogCancel>Cancelar</AlertDialogCancel>
                     <AlertDialogAction>
                       <Button
-                        onClick={() => onDelete(customer.id)}
+                        onClick={() => onDelete(Number(customer.id))}
                         variant="destructive"
                         className="bg-red-600 hover:bg-red-700"
                       >
@@ -194,7 +194,7 @@ export default function CustomerDetails({ customer, onDelete }: CustomerDetailsP
                 <p>{customer.endereco.cidade_uf}</p>
               )}
               {customer.endereco.cep && (
-                <p>CEP: {customer.endereco.cep}</p>
+                <p>CEP: {customer?.endereco?.cep ?? "Não informado"}</p>
               )}
             </div>
           </div>

@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-
+import { Customer } from "@/types/customers";
 import { CustomerTableProps } from "@/types/customerProps";
 
 import { Users } from "lucide-react";
@@ -71,9 +71,9 @@ export default function CustomerTable({ customers, isLoading, onSelectCustomer, 
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {customers.map((customer: Customer) => (
-                    <TableRow 
-                      key={customer.id}
+                {customers.map((customer: Customer, index) => (
+                  <TableRow 
+                      key={customer.id ?? `cliente-${index}`}
                       className={`cursor-pointer hover:bg-gray-50 transition-colors ${
                         selectedCustomer?.id === customer.id ? 'bg-red-50 border-l-4 border-red-500' : ''
                       }`}
@@ -92,13 +92,13 @@ export default function CustomerTable({ customers, isLoading, onSelectCustomer, 
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline">
-                        {tipoContribuinteLabels[customer.tipo_contribuinte] || customer.tipo_contribuinte}
+                        {tipoContribuinteLabels[customer.tipo_contribuinte as keyof typeof tipoContribuinteLabels] ?? "Desconhecido"}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      {customer.cliente_desde ? 
-                        format(new Date(customer.cliente_desde), "dd/MM/yyyy", { locale: ptBR }) 
-                        : '-'
+                      {customer.cliente_desde && !isNaN(new Date(customer.cliente_desde).getTime())
+                        ? format(new Date(customer.cliente_desde), "dd/MM/yyyy", { locale: ptBR })
+                        : "-"
                       }
                     </TableCell>
                     <TableCell>

@@ -50,6 +50,8 @@ export interface Customer {
   contatos?: Contato[];
   observacoes?: string;
   is_active: boolean;
+  created_date?: string;
+  updated_date?: string;
 }
 
 export interface CustomerFormData extends Omit<Customer, 'contatos'> {
