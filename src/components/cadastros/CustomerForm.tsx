@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 
 import { CustomerFormProps } from "@/types/customerProps";
@@ -10,12 +9,19 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  FormErrors,
+  CustomerFormValues,
+  Contato,
+  Endereco,
+  AllFields
+} from "@/types/customers";
+
 
 import { Plus, Trash2 } from "lucide-react";
 
-const [errors, setErrors] = useState<FormErrors>({});
-
 export default function CustomerForm({ customer, onSave, onCancel, isSaving }: CustomerFormProps) {
+  const [errors, setErrors] = useState<FormErrors>({});
   const [formData, setFormData] = useState<CustomerFormValues>({
     id: customer?.id || "",
     cpf_cnpj: customer?.cpf_cnpj || "",
@@ -283,8 +289,7 @@ export default function CustomerForm({ customer, onSave, onCancel, isSaving }: C
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Contatos</CardTitle>
-          <Button 
-            // type="button" (comentado para teste)
+          <Button
             variant="outline" 
             size="sm" 
             onClick={addContact}>
@@ -298,8 +303,7 @@ export default function CustomerForm({ customer, onSave, onCancel, isSaving }: C
               <div className="flex justify-between items-center mb-3">
                 <h4 className="font-medium">Contato {index + 1}</h4>
                 {formData.contatos.length > 1 && (
-                  <Button 
-                    // type="button" (comentado para teste)
+                  <Button
                     variant="default" 
                     size="sm" 
                     onClick={() => removeContact(index)}
@@ -371,14 +375,12 @@ export default function CustomerForm({ customer, onSave, onCancel, isSaving }: C
 
       {/* Botões */}
       <div className="flex justify-end gap-4">
-        <Button 
-          // type="button" (comentado para teste)
+        <Button
           variant="outline" 
           onClick={onCancel}>
           Cancelar
         </Button>
-        <Button 
-          // type="submit" (comentado para teste) 
+        <Button
           disabled={isSaving}
           className="bg-red-600 hover:bg-red-700"
         >

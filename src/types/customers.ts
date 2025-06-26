@@ -58,13 +58,13 @@ export interface CustomerFormData extends Omit<Customer, 'contatos'> {
   contatos: Contato[];
 }
 
-type CustomerField = keyof CustomerFormValues;
+export type CustomerField = keyof CustomerFormValues;
 
-type NestedField = keyof CustomerFormValues['endereco'] | `contatos.${number}.${keyof Contato}`;
+export type NestedField = keyof CustomerFormValues['endereco'] | `contatos.${number}.${keyof Contato}`;
 
-type AllFields = CustomerField | `endereco.${keyof CustomerFormValues['endereco']}` | `contatos.${number}.${keyof Contato}`;
+export type AllFields = CustomerField | `endereco.${keyof CustomerFormValues['endereco']}` | `contatos.${number}.${keyof Contato}`;
 
-interface ErrorDictionary {
+export interface ErrorDictionary {
   [key: string]: string;
 }
 
@@ -78,6 +78,6 @@ export interface CustomerFormValues {
   cliente_desde: string;
   endereco: Endereco;
   contatos: Contato[];
-  observacoes: string;
+  observacoes?: string;
   is_active: boolean;
 }
