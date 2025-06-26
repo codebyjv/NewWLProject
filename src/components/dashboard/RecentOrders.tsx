@@ -89,7 +89,7 @@ export default function RecentOrders({ orders, isLoading }: RecentOrderProps) {
                       </div>
                     </TableCell>
                     <TableCell>
-                      {format(new Date(order.sale_date), "dd/MM/yyyy", { locale: ptBR })}
+                      {order.sale_date ? format(new Date(order.sale_date), "dd/MM/yyyy", { locale: ptBR }) : "-"}
                     </TableCell>
                     <TableCell className="font-medium">
                       {new Intl.NumberFormat('pt-BR', {
@@ -98,8 +98,11 @@ export default function RecentOrders({ orders, isLoading }: RecentOrderProps) {
                       }).format(order.total_amount || 0)}
                     </TableCell>
                     <TableCell>
-                      <Badge className={statusColors[order.status] || statusColors.pendente}>
-                        {statusLabels[order.status] || "Pendente"}
+                      <Badge 
+                        className=
+                        {statusColors[order.status as keyof typeof statusColors] ?? statusColors.pendente}
+                      >
+                        {statusLabels[order.status as keyof typeof statusLabels] ?? "Pendente"}
                       </Badge>
                     </TableCell>
                   </TableRow>

@@ -33,7 +33,7 @@ interface LayoutProps {
 const navigationItems = [
   {
     title: "Dashboard",
-    url: createPageUrl("Dashboard"),
+    url: "/",
     icon: BarChart3,
   },
   {

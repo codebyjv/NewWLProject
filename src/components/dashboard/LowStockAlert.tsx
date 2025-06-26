@@ -36,7 +36,7 @@ export default function LowStockAlert({ products, isLoading }: LowStockAlertProp
                 <Skeleton className="h-4 w-32" />
                 <Skeleton className="h-6 w-12 rounded-full" />
               </div>
-            ))};
+            ))}
           </div>
         </CardContent>
       </Card>
