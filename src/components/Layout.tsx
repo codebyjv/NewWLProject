@@ -95,7 +95,7 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
                   <Package className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h2 className="font-bold text-gray-900 text-lg">StockMaster</h2>
+                  <h2 className="font-bold text-gray-900 text-lg">WL Pesos Padrão</h2>
                   <p className="text-xs text-gray-500">Sistema de Gestão</p>
                 </div>
               </div>
