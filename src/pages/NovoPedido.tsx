@@ -81,7 +81,7 @@ export default function NovoPedido() {
           <Button
             variant="outline"
             size="md"
-            onClick={() => navigate(createPageUrl("Pedidos"))}
+            onClick={() => navigate(createPageUrl("/Pedidos"))}
           >
             <ArrowLeft className="w-4 h-4" />
           </Button>
@@ -132,7 +132,7 @@ export default function NovoPedido() {
                 products={products}
                 customers={customers}
                 onSave={handleSaveOrder}
-                onCancel={() => navigate(createPageUrl("Pedidos"))}
+                onCancel={() => navigate(createPageUrl("/Pedidos"))}
                 isSaving={isSaving}
               />
             )}

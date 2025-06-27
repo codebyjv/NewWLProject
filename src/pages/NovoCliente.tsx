@@ -59,7 +59,7 @@ export default function NovoCliente() {
           <Button
             variant="outline"
             size="md"
-            onClick={() => navigate(createPageUrl("Cadastros"))}
+            onClick={() => navigate(createPageUrl("/Cadastros"))}
           >
             <ArrowLeft className="w-4 h-4" />
           </Button>
@@ -88,7 +88,7 @@ export default function NovoCliente() {
               <CustomerForm
                 customer={customer}
                 onSave={handleSaveCustomer}
-                onCancel={() => navigate(createPageUrl("Cadastros"))}
+                onCancel={() => navigate(createPageUrl("/Cadastros"))}
                 isSaving={isSaving}
               />
             )}

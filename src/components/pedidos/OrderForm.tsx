@@ -556,13 +556,13 @@ export default function OrderForm({ order, products = [], customers = [], onSave
       {/* Botões */}
       <div className="flex justify-end gap-4">
         <Button 
-          // type="button" 
+          type="button" 
           variant="outline" 
           onClick={onCancel}>
           Cancelar
         </Button>
         <Button 
-          // type="submit" 
+          type="submit" 
           disabled={isSaving || (formData.items ?? []).length === 0 || !formData.customer_cpf_cnpj || !formData.seller || !formData.payment_method}
           className="bg-red-600 hover:bg-red-700"
         >

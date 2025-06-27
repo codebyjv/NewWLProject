@@ -38,6 +38,7 @@ interface ButtonProps extends VariantProps<typeof buttonVariants> {
   variant?: "default" | "destructive" | "outline";
   size?: "sm" | "md";
   role?: "combobox";
+  type?: "button" | "submit" | "reset";
   disabled?: boolean;
 }
 
