@@ -229,7 +229,7 @@ export default function Pedidos() {
             <h1 className="text-3xl font-bold text-gray-900">Central de Pedidos</h1>
             <p className="text-gray-600 mt-1">Gerencie todos os pedidos do sistema</p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-3 w-full">
+          <div className="flex flex-col sm:flex-row gap-3 w-auto">
             <Button
               variant="outline"
               onClick={exportToCSV}

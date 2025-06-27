@@ -71,6 +71,13 @@ export default function ProductForm({ product, onSave, onCancel }: ProductFormPr
       [name]: value as MaterialType
     }));
   };
+
+  const handleBooleanChange = (name: keyof ProductFormData, value: boolean) => {
+  setFormData(prev => ({
+    ...prev,
+    [name]: value
+  }));
+};
   
   const parseWeight = (weightStr: string): number => {
     if (!weightStr) return 0;
@@ -164,7 +171,7 @@ export default function ProductForm({ product, onSave, onCancel }: ProductFormPr
             <Switch
               id="is_active"
               checked={formData.is_active}
-              onCheckedChange={(checked) => handleSelectChange('is_active', checked ? 'true' : 'false')}
+              onCheckedChange={(checked) => handleBooleanChange("is_active", checked)}
             />
             <Label htmlFor="is_active">Produto Ativo</Label>
           </div>
