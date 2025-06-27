@@ -35,6 +35,10 @@ export default function OrderForm({ order, products = [], customers = [], onSave
       installments: [],
       total_amount: 0
   });
+  
+  console.log("👉 Order recebido:", order);
+  console.log("👉 FormData atual:", formData);
+
 
   const [itemForm, setItemForm] = useState({
     product_id: "",
@@ -53,30 +57,46 @@ export default function OrderForm({ order, products = [], customers = [], onSave
 
   useEffect(() => {
     if (order) {
+      // popula com os dados do pedido existente
       setFormData({
         customer_cpf_cnpj: order.customer_cpf_cnpj || "",
         customer_name: order.customer_name || "",
-        sale_date: order.sale_date ? new Date(order.sale_date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+        sale_date: order.sale_date ? new Date(order.sale_date).toISOString().split('T')[0] : "",
         seller: order.seller || "",
-        payment_method: order.payment_method || "",
+        payment_method: order.payment_method || "pix",
         observations: order.observations || "",
         items: Array.isArray(order.items) ? order.items : [],
-        subtotal: order.subtotal || 0,
-        discount_total: order.discount_total || 0,
-        shipping_cost: order.shipping_cost || 0,
-        additional_cost: order.additional_cost || 0,
-        tax_cost: order.tax_cost || 0,
+        subtotal: order.subtotal ?? 0,
+        discount_total: order.discount_total ?? 0,
+        shipping_cost: order.shipping_cost ?? 0,
+        additional_cost: order.additional_cost ?? 0,
+        tax_cost: order.tax_cost ?? 0,
         installments: Array.isArray(order.installments) ? order.installments : [],
-        total_amount: order.total_amount || 0
+        total_amount: order.total_amount ?? 0
       });
-
-      if (order.installments && order.installments.length > 0) {
-        setNumInstallments(order.installments.length);
-      } else {
-        setNumInstallments(1);
-      }
+      setNumInstallments(order.installments?.length || 1);
+    } else {
+      // modo criação: inicializa vazio com valores padrão
+      setFormData({
+        customer_cpf_cnpj: "",
+        customer_name: "",
+        sale_date: new Date().toISOString().split("T")[0],
+        seller: "",
+        payment_method: "pix",
+        observations: "",
+        items: [],
+        subtotal: 0,
+        discount_total: 0,
+        shipping_cost: 0,
+        additional_cost: 0,
+        tax_cost: 0,
+        installments: [],
+        total_amount: 0
+      });
+      setNumInstallments(1);
     }
   }, [order]);
+
   
   useEffect(() => {
     calculateTotals();

@@ -110,7 +110,25 @@ export default function NovoPedido() {
               </div>
             ) : (
               <OrderForm
-                order={order}
+                  order={order ?? {
+                    id: 0,
+                    order_number: "",
+                    sale_date: new Date().toISOString(),
+                    customer_name: "",
+                    customer_cpf_cnpj: "",
+                    payment_method: "pix",
+                    items: [],
+                    subtotal: 0,
+                    total_amount: 0,
+                    discount_total: 0,
+                    shipping_cost: 0,
+                    additional_cost: 0,
+                    tax_cost: 0,
+                    status: "pendente",
+                    created_date: new Date().toISOString(),
+                    seller: "",
+                    delete: false
+                  }}
                 products={products}
                 customers={customers}
                 onSave={handleSaveOrder}
