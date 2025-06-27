@@ -18,15 +18,15 @@ const materialOptions = [
 
 export default function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
   const [formData, setFormData] = useState<ProductFormData>({
-      name: product?.name || '',
-      material: product?.material || 'aco_inox_f1',
-      weight: product?.weight || '',
-      weight_in_grams: product?.weight_in_grams || 0,
-      stock_quantity: product?.stock_quantity || 0,
-      min_stock: product?.min_stock || 0,
-      unit_price: product?.unit_price || undefined,
-      is_active: product?.is_active ?? true,
-      id: product?.id || ''
+    id: product?.id || "",
+    name: "",
+    material: "aco_inox_f1",
+    weight: "",
+    weight_in_grams: 0,
+    stock_quantity: 0,
+    min_stock: 0,
+    unit_price: 0,
+    is_active: true,
   });
 
   useEffect(() => {

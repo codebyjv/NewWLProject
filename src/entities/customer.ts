@@ -1,3 +1,5 @@
+import { Customer } from "@/types/customers";
+
 export const customersMock: Customer[] = [
   {
     id: "1", // Adicionado

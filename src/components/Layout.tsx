@@ -38,17 +38,17 @@ const navigationItems = [
   },
   {
     title: "Estoque",
-    url: createPageUrl("Estoque"),
+    url: createPageUrl("/Estoque"),
     icon: Package,
   },
   {
     title: "Pedidos",
-    url: createPageUrl("Pedidos"),
+    url: createPageUrl("/Pedidos"),
     icon: ShoppingCart,
   },
   {
     title: "Cadastros",
-    url: createPageUrl("Cadastros"),
+    url: createPageUrl("/Cadastros"),
     icon: Users,
   },
 ];
@@ -113,7 +113,7 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
                         <SidebarMenuButton 
                           asChild 
                           className={`rounded-lg transition-all duration-200 ${
-                            location.pathname === item.url 
+                            location.pathname.startsWith(item.url)
                               ? 'bg-red-50 text-red-700 border border-red-200 shadow-sm' 
                               : 'hover:bg-gray-50 hover:text-gray-900'
                           }`}

@@ -13,6 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 import { Search, Plus, Package, AlertTriangle } from "lucide-react";
 
+import { productsMock } from "@/entities/product";
+
 export default function Estoque() {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
@@ -35,8 +37,8 @@ export default function Estoque() {
   const loadProducts = async () => {
     setIsLoading(true);
     try {
-      const data = await ProductService.list("weight_in_grams");
-      setProducts(data);
+      // simula dados reais usando o mock
+      setProducts(productsMock);
     } catch (error) {
       console.error("Erro ao carregar produtos:", error);
     }
@@ -83,24 +85,32 @@ export default function Estoque() {
     };
   };
 
+  // No momento, estamos simulando o salvamento do produto com mocks
   const handleSaveProduct = async (formData: ProductFormData) => {
     setIsSaving(true);
     try {
       const productData = convertFormDataToProduct(formData);
+
+      // Aqui simulamos o salvamento, apenas com console e logs
       if (formData.id) {
-        await ProductService.update(formData.id, productData);
+        console.log("📝 Simulando UPDATE de produto:", productData);
+        // Simule lógica de update no array local se quiser
       } else {
-        await ProductService.create(productData);
+        console.log("🆕 Simulando CREATE de novo produto:", productData);
+        // Simule lógica de append ao array se quiser
       }
+
       setShowForm(false);
       setEditingProduct(undefined);
-      loadProducts();
+      // Mantém o mock atual
+      setProducts(productsMock);
     } catch (error) {
-      console.error("Erro ao salvar produto:", error);
+      console.error("Erro ao simular salvamento do produto:", error);
     } finally {
       setIsSaving(false);
     }
   };
+
 
   const handleEditProduct = (product: Product) => {
     setEditingProduct(product);
