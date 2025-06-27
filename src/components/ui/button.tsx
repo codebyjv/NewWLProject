@@ -19,6 +19,9 @@ const buttonVariants = cva(
         sm: "h-9 px-3 text-sm",
         md: "h-10 px-4 py-2",
       },
+      role: {
+        combobox: "focus:ring-1 focus:ring-offset-2 focus:ring-offset-background hover:bg-red",
+      }
     },
     defaultVariants: {
       variant: "default",
@@ -34,12 +37,14 @@ interface ButtonProps extends VariantProps<typeof buttonVariants> {
   onClick?: () => void;
   variant?: "default" | "destructive" | "outline";
   size?: "sm" | "md";
+  role?: "combobox";
   disabled?: boolean;
 }
 
 export const Button = ({
   variant,
   size,
+  role,
   className,
   children,
   asChild,

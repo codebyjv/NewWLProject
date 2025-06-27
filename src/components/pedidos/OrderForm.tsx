@@ -217,7 +217,7 @@ export default function OrderForm({ order, products = [], customers = [], onSave
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  // role="combobox"
+                  role="combobox"
                   aria-expanded={customerSearchOpen}
                   className="w-full justify-between"
                 >
