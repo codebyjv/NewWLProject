@@ -4,8 +4,8 @@ export interface Order {
   customer_id?: string;
   customer_cpf_cnpj: string;
   customer_name: string;
-  created_date: string; // formato: "date"
-  sale_date: string; // formato: "date"
+  created_date: string; 
+  sale_date: string; 
   seller: string;
   items?: {
     product_id: string;
@@ -29,7 +29,7 @@ export interface Order {
   installments?: {
     number: number;
     value: number;
-    due_date: string; // formato: "date"
+    due_date: string;
   }[];
   status: "pendente" | "processando" | "enviado" | "entregue" | "cancelado";
   observations?: string;
@@ -56,10 +56,10 @@ export interface OrderFormData {
   created_date: string;
   customer_cpf_cnpj: string;
   customer_name: string;
-  status: "pendente" | "processando" | "enviado" | "entregue" | "cancelado"
+  status: "pendente" | "processando" | "enviado" | "entregue" | "cancelado";
   sale_date: string;
   seller: string;
-  payment_method: "boleto_bancario" | "pix" | "cartao_credito" | "cartao_debito"
+  payment_method: "boleto_bancario" | "pix" | "cartao_credito" | "cartao_debito";
   observations: string;
   items: OrderItem[];
   subtotal: number;

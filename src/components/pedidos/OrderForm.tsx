@@ -13,6 +13,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "
 
 import { OrderFormProps } from "@/types/orderProps";
 import { OrderFormData, OrderItem, Installment } from "@/types/order";
+import { Order } from "@/types/order";
 
 import { Plus, Trash2, Search, Check, ChevronsUpDown } from "lucide-react";
 import { addDays, format as formatDate } from "date-fns";
@@ -82,7 +83,7 @@ export default function OrderForm({ order, products = [], customers = [], onSave
   }, [formData.items, formData.discount_total, formData.shipping_cost, formData.additional_cost, formData.tax_cost]);
 
   useEffect(() => {
-    if (["boleto_bancario", "cartao_credito"].includes(formData.payment_method)) {
+    if (["boleto_bancario", "cartao_credito"].includes(formData.payment_method ?? "")) {
       generateInstallments();
     } else {
       setFormData(prev => ({...prev, installments: []}));
@@ -90,12 +91,12 @@ export default function OrderForm({ order, products = [], customers = [], onSave
   }, [numInstallments, formData.total_amount, formData.payment_method, formData.sale_date]);
   
   const generateInstallments = () => {
-    if (numInstallments > 0 && formData.total_amount > 0) {
-      const installmentValue = formData.total_amount / numInstallments;
+    if (numInstallments > 0 && (formData.total_amount ?? 0) > 0) {
+      const installmentValue = (formData.total_amount ?? 0) / numInstallments;
       const newInstallments = Array.from({ length: numInstallments }, (_, i) => ({
         number: i + 1,
         value: installmentValue,
-        due_date: formatDate(addDays(new Date(formData.sale_date), (i + 1) * 30), 'yyyy-MM-dd')
+        due_date: formatDate(addDays(new Date(formData.sale_date ?? ""), (i + 1) * 30), 'yyyy-MM-dd')
       }));
       setFormData(prev => ({ ...prev, installments: newInstallments }));
     } else {
@@ -141,7 +142,7 @@ export default function OrderForm({ order, products = [], customers = [], onSave
 
     setFormData(prev => ({
       ...prev,
-      items: [...prev.items, newItem]
+      items: [...prev.items ?? [], newItem]
     }));
 
     setItemForm({
@@ -155,14 +156,14 @@ export default function OrderForm({ order, products = [], customers = [], onSave
   const removeItem = (index: number) => {
     setFormData(prev => ({
       ...prev,
-      items: prev.items.filter((_, i) => i !== index)
+      items: prev.items ?? [].filter((_, i) => i !== index)
     }));
   };
 
   const calculateTotals = () => {
     setTimeout(() => {
       setFormData(prev => {
-        const subtotal = prev.items.reduce((sum, item) => sum + item.total_price, 0);
+        const subtotal = (prev.items ?? []).reduce((sum, item) => sum + item.total_price, 0);
         const total_amount = subtotal - (prev.discount_total || 0) + (prev.shipping_cost || 0) + (prev.additional_cost || 0) + (prev.tax_cost || 0);
         return { ...prev, subtotal, total_amount };
       });
@@ -171,7 +172,7 @@ export default function OrderForm({ order, products = [], customers = [], onSave
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onSave(formData);
+    onSave(formData as Order);
   };
 
   // Filter customers based on search text
@@ -408,7 +409,7 @@ export default function OrderForm({ order, products = [], customers = [], onSave
       </Card>
 
       {/* Lista de Itens */}
-      {formData.items.length > 0 && (
+      {(formData.items ?? []).length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle>Itens do Pedido</CardTitle>
@@ -426,7 +427,7 @@ export default function OrderForm({ order, products = [], customers = [], onSave
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {formData.items.map((item, index) => (
+                {(formData.items ?? []).map((item, index) => (
                   <TableRow key={index}>
                     <TableCell>{item.product_name}</TableCell>
                     <TableCell>{item.quantity}</TableCell>
@@ -515,7 +516,7 @@ export default function OrderForm({ order, products = [], customers = [], onSave
           <div className="flex justify-between items-center text-2xl font-bold">
             <span>Total do Pedido:</span>
             <span className="text-green-600">
-              {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(formData.total_amount)}
+              {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(formData.total_amount ?? 0)}
             </span>
           </div>
         </CardContent>
@@ -542,7 +543,7 @@ export default function OrderForm({ order, products = [], customers = [], onSave
         </Button>
         <Button 
           // type="submit" 
-          disabled={isSaving || formData.items.length === 0 || !formData.customer_cpf_cnpj || !formData.seller || !formData.payment_method}
+          disabled={isSaving || (formData.items ?? []).length === 0 || !formData.customer_cpf_cnpj || !formData.seller || !formData.payment_method}
           className="bg-red-600 hover:bg-red-700"
         >
           {isSaving ? "Salvando..." : "Salvar Pedido"}
