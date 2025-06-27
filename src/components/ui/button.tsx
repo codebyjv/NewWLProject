@@ -1,6 +1,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { ReactNode } from "react";
 import classNames from "classnames";
+import { Slot } from "@radix-ui/react-slot";
 
 const cn = classNames;
 
@@ -27,6 +28,7 @@ const buttonVariants = cva(
 );
 
 interface ButtonProps extends VariantProps<typeof buttonVariants> {
+  asChild?: ReactNode;
   children: ReactNode;
   className?: string;
   onClick?: () => void;
@@ -35,10 +37,26 @@ interface ButtonProps extends VariantProps<typeof buttonVariants> {
   disabled?: boolean;
 }
 
-export const Button = ({ variant, size, className, children }: ButtonProps) => {
+export const Button = ({
+  variant,
+  size,
+  className,
+  children,
+  asChild,
+  ...props
+}: ButtonProps) => {
+  const Comp = asChild ? Slot : "button";
+
   return (
-    <button className={cn(buttonVariants({ variant, size, className }))}>
+    <Comp
+      className={cn(
+        buttonVariants({ variant, size }),
+        "inline-flex items-center justify-center whitespace-nowrap",
+        className
+      )}
+      {...props}
+    >
       {children}
-    </button>
+    </Comp>
   );
 };

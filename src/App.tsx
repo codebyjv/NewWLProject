@@ -14,10 +14,12 @@ function App() {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/pedidos" element={<Pedidos />} />
+        <Route path="/Pedidos/NovoPedido" element={<NovoPedido />} />
         <Route path="/estoque" element={<Estoque />} />
         <Route path="/cadastros" element={<Cadastro />} />
+        <Route path="/Cadastros/NovoCliente" element={<NovoCliente />} />
         <Route path="/novo-cliente" element={<NovoCliente />} />
-        <Route path="/Pedidos/NovoPedido" element={<NovoPedido />} />
+        
       </Routes>
     </Layout>
   );

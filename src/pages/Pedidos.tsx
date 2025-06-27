@@ -229,22 +229,26 @@ export default function Pedidos() {
             <h1 className="text-3xl font-bold text-gray-900">Central de Pedidos</h1>
             <p className="text-gray-600 mt-1">Gerencie todos os pedidos do sistema</p>
           </div>
-          <div className="flex gap-3 w-full lg:w-auto">
+          <div className="flex flex-col sm:flex-row gap-3 w-full">
             <Button
               variant="outline"
               onClick={exportToCSV}
               disabled={filteredOrders.length === 0}
-              className="flex-1 lg:flex-none"
+              className="w-full sm:w-auto flex-1"
             >
               <Download className="w-4 h-4 mr-2" />
               Exportar CSV
             </Button>
-            <Link to={createPageUrl("NovoPedido")} className="flex-1 lg:flex-none">
-              <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
+
+            <Button
+              asChild
+              className="w-full sm:w-auto flex-1 bg-red-600 hover:bg-red-700 text-white"
+            >
+              <Link to={createPageUrl("NovoPedido")}>
                 <Plus className="w-4 h-4 mr-2" />
                 Novo Pedido
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </div>
 
