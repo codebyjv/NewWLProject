@@ -123,7 +123,10 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, isLoading, onSelectOr
                     <TableCell>
                       <td className="text-right">
                         <button
-                          onClick={() => onDeleteOrder(order)}
+                          onClick={(e) => {
+                            e.stopPropagation(); // impede que o clique ative o onClick da linha
+                            onDeleteOrder(order);
+                          }}
                           className="text-red-600 hover:text-red-800"
                           title="Excluir pedido"
                         >
