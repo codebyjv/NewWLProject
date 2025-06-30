@@ -1,31 +1,25 @@
 import React from 'react';
-import { Card, CardContent } from "@/components/ui/card";
-import { AlertTriangle, PackageX } from "lucide-react";
 
-interface StockAlertProps {
-  lowStockCount?: number;
-  outOfStockCount?: number;
-}
+import { Card, CardContent } from '@/components/ui/card';
+import { Pencil } from 'lucide-react';
+import { ProductCardProps } from '@/types/productsProps';
 
-export default function StockAlert({ lowStockCount, outOfStockCount }: StockAlertProps) {
+export default function ProductCard({ product, onEdit }: ProductCardProps) {
   return (
-    <Card className="bg-amber-50 border-amber-200">
-      <CardContent className="p-4">
-        <div className="flex flex-col md:flex-row gap-4 justify-around items-center">
-          <div className="flex items-center gap-3">
-            <AlertTriangle className="w-6 h-6 text-amber-600" />
-            <div>
-              <p className="font-bold text-amber-800">Estoque Baixo</p>
-              <p className="text-sm text-amber-700">{lowStockCount} item(ns)</p>
-            </div>
+    <Card className="hover:shadow-md transition-all cursor-pointer">
+      <CardContent className="p-4 space-y-2">
+        <div onClick={() => onEdit(product)} role="button" tabIndex={0} className="space-y-2 focus:outline-none focus:ring-2 focus:ring-red-500 rounded-md">
+          <div className="flex justify-between items-center">
+            <h2 className="text-lg font-semibold text-gray-900">{product.name}</h2>
+            <Pencil className="w-4 h-4 text-gray-400" />
           </div>
-          <div className="flex items-center gap-3">
-            <PackageX className="w-6 h-6 text-red-600" />
-            <div>
-              <p className="font-bold text-red-800">Fora de Estoque</p>
-              <p className="text-sm text-red-700">{outOfStockCount} item(ns)</p>
-            </div>
-          </div>
+          <p className="text-sm text-gray-600">{product.weight} • {product.material.replaceAll('_', ' ')}</p>
+          <p className="text-sm text-gray-500">
+            Qtd: {product.stock_quantity} • Mín: {product.min_stock}
+          </p>
+          <p className="text-sm text-green-600 font-medium">
+            R$ {product.unit_price.toFixed(2)}
+          </p>
         </div>
       </CardContent>
     </Card>

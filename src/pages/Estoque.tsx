@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 
-import { ProductService } from "@/services/ProductService"
 import { Product, ProductFormData } from "@/types/product";
-import { ProductCardProps } from "@/types/productsProps";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import ProductCard from "../components/estoque/ProductCard";
+
 import ProductForm from "../components/estoque/ProductForm";
 import StockAlert from "../components/estoque/StockAlert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -115,16 +115,6 @@ export default function Estoque() {
   const handleEditProduct = (product: Product) => {
     setEditingProduct(product);
     setShowForm(true);
-  };
-
-  const ProductCard = ({ product, onEdit }: ProductCardProps) => {
-    return (
-      <ProductCard
-        key={product.id}
-        product={product}
-        onEdit={() => handleEditProduct(product)}
-      />
-    );
   };
 
   const lowStockCount = products.filter(p => p.stock_quantity <= p.min_stock).length;
