@@ -118,7 +118,7 @@ export default function CustomerTable({ customers, isLoading, onSelectCustomer, 
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate(`/NovoCliente?id=${customer.id}`); // ou use createPageUrl
+                          navigate(`/Cadastros/NovoCliente?id=${customer.id}`);
                         }}
                         title="Editar cliente"
                         className="text-gray-700 hover:text-blue-600 transition"
