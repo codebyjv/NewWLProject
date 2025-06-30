@@ -7,7 +7,7 @@ export const productsMock: Product[] = [
     material: "aco_inox_f1",
     weight: "1mg",
     weight_in_grams: 0.001,
-    stock_quantity: 10,
+    stock_quantity: 0,
     min_stock: 5,
     unit_price: 100.0,
     is_active: true,

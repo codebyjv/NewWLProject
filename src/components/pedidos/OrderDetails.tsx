@@ -38,6 +38,9 @@ const paymentLabels = {
   cartao_debito: "Cartão de Débito"
 };
 
+const [confirmingDelete, setConfirmingDelete] = useState(false);
+const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
 export default function OrderDetails({ order, onDelete }: OrderDetailsProps) {
   if (!order) {
     return (
@@ -69,32 +72,38 @@ export default function OrderDetails({ order, onDelete }: OrderDetailsProps) {
           <div className="flex gap-2">
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="destructive" size="sm">
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => setShowDeleteDialog(true)}
+                >
                   <Trash2 className="w-4 h-4 mr-2" />
                   Excluir
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Esta ação não pode ser desfeita. Isso excluirá permanentemente o pedido
-                    <span className="font-bold"> {order.order_number || order.id}</span>.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                  <AlertDialogAction 
-                    {...{
-                      // @ts-ignore - Forçando a passagem do onClick
-                      onClick: () => onDelete(order.id),
-                    }}
-                    className="bg-red-600 hover:bg-red-700"
-                  >
-                    Sim, excluir
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
+              {showDeleteDialog && (
+                <AlertDialog>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Isso vai excluir o pedido <span className="font-bold">{order.order_number}</span>.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel onClick={() => setShowDeleteDialog(false)}>
+                        Cancelar
+                      </AlertDialogCancel>
+                      <AlertDialogAction onClick={() => {
+                        onDelete(order.id);
+                        setShowDeleteDialog(false);
+                      }}>
+                        Sim, excluir
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
             </AlertDialog>
             <Link to={createPageUrl(`NovoPedido?id=${order.id}`)}>
               <Button variant="outline" size="sm">

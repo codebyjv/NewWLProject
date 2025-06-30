@@ -1,6 +1,5 @@
 import { Order } from "@/types/order";
 
-// Mock de exemplo
 export const ordersMock: Order[] = [
   {
     id: 1,

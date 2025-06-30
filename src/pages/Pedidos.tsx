@@ -37,6 +37,9 @@ import OrdersTable from '@/components/pedidos/OrdersTable.js';
 import { Product } from "@/types/product";
 import { ProductService } from "../services/ProductService";
 
+import { ordersMock } from "@/entities/order";
+import { customersMock } from "@/entities/customer";
+
 export default function Pedidos() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
@@ -48,8 +51,8 @@ export default function Pedidos() {
     search: '',
     dateFrom: '',
     dateTo: '',
-    status: '',
-    paymentMethod: '',
+    status: 'all',
+    paymentMethod: 'all',
     tipoContribuinte: 'all',
     isActive: true
   });
@@ -65,12 +68,12 @@ export default function Pedidos() {
   const loadData = async () => {
     setIsLoading(true);
     try {
-      const [ordersData = [], customersData = []] = await Promise.all([
-        OrderService.list("-created_date").catch(() => []),
-        CustomerService.list().catch(() => [])
-      ]);
-      setOrders(Array.isArray(ordersData) ? ordersData : []);
-      setCustomers(Array.isArray(customersData) ? customersData : []);
+      // utilizando mock para testes
+      const ordersData = ordersMock;
+      const customersData = customersMock;
+
+      setOrders(ordersData);
+      setCustomers(customersData);
     } catch (error) {
       console.error("Erro ao carregar dados:", error);
       setOrders([]);
@@ -78,6 +81,7 @@ export default function Pedidos() {
     }
     setIsLoading(false);
   };
+
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -156,13 +160,14 @@ export default function Pedidos() {
 
   const handleDeleteOrder = async (orderId: number) => {
     try {
-      await OrderService.delete(orderId);
+      // Filtra localmente para simular remoção
+      setOrders(prev => prev.filter(order => order.id !== orderId));
       setSelectedOrder(null);
-      loadData();
     } catch (error) {
-      console.error("Erro ao excluir pedido:", error);
+      console.error("Erro ao excluir pedido (simulado):", error);
     }
   };
+
 
   const exportToCSV = () => {
     const safeOrders = Array.isArray(filteredOrders) ? filteredOrders : [];
