@@ -31,7 +31,7 @@ const buttonVariants = cva(
 );
 
 interface ButtonProps extends VariantProps<typeof buttonVariants> {
-  asChild?: ReactNode;
+  asChild?: boolean;
   children: ReactNode;
   className?: string;
   onClick?: () => void;

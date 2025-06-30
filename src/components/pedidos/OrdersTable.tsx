@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { OrdersTableProps } from "@/types/orderProps";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -31,7 +31,7 @@ const paymentLabels = {
   cartao_debito: "Cartão Débito"
 };
 
-const OrdersTable: React.FC<OrdersTableProps> = ({ orders, isLoading, onSelectOrder, selectedOrder }) => {
+const OrdersTable: React.FC<OrdersTableProps> = ({ orders, isLoading, onSelectOrder, selectedOrder, onDeleteOrder }) => {
   if (isLoading) {
     return (
       <Card>
@@ -82,6 +82,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, isLoading, onSelectOr
                   <TableHead>Valor Total</TableHead>
                   <TableHead>Pagamento</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>Ação</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -118,6 +119,17 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, isLoading, onSelectOr
                       <Badge className={statusColors[order.status] || statusColors.pendente}>
                         {statusLabels[order.status] || "Pendente"}
                       </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <td className="text-right">
+                        <button
+                          onClick={() => onDeleteOrder(order)}
+                          className="text-red-600 hover:text-red-800"
+                          title="Excluir pedido"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </td>
                     </TableCell>
                   </TableRow>
                 ))}

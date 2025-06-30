@@ -26,12 +26,12 @@ export interface OrderDetailsProps {
   order: Order | null;
   products: Product[];
   customers: Customer[];
-  onDelete: (id: number) => void;
 }
 
 export interface OrdersTableProps {
   orders: Order[];
   isLoading: boolean;
   onSelectOrder: (order: Order) => void;
-  selectedOrder: Order | null; // Alterado para ser um Order ou null
+  selectedOrder: Order | null;
+  onDeleteOrder: (order: Order) => void;
 }

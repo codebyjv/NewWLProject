@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -38,10 +37,9 @@ const paymentLabels = {
   cartao_debito: "Cartão de Débito"
 };
 
-const [confirmingDelete, setConfirmingDelete] = useState(false);
-const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-
-export default function OrderDetails({ order, onDelete }: OrderDetailsProps) {
+export default function OrderDetails({ order, products, customers }: OrderDetailsProps) {
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   if (!order) {
     return (
       <Card>
@@ -70,41 +68,6 @@ export default function OrderDetails({ order, onDelete }: OrderDetailsProps) {
             Detalhes do Pedido
           </div>
           <div className="flex gap-2">
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => setShowDeleteDialog(true)}
-                >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Excluir
-                </Button>
-              </AlertDialogTrigger>
-              {showDeleteDialog && (
-                <AlertDialog>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Isso vai excluir o pedido <span className="font-bold">{order.order_number}</span>.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel onClick={() => setShowDeleteDialog(false)}>
-                        Cancelar
-                      </AlertDialogCancel>
-                      <AlertDialogAction onClick={() => {
-                        onDelete(order.id);
-                        setShowDeleteDialog(false);
-                      }}>
-                        Sim, excluir
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              )}
-            </AlertDialog>
             <Link to={createPageUrl(`NovoPedido?id=${order.id}`)}>
               <Button variant="outline" size="sm">
                 <Edit className="w-4 h-4 mr-2" />
@@ -114,7 +77,7 @@ export default function OrderDetails({ order, onDelete }: OrderDetailsProps) {
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6 pt-2 pb-4">
         {/* Status */}
         <div className="flex justify-between items-center">
           <span className="font-medium">Status:</span>

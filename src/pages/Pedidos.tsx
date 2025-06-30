@@ -29,6 +29,16 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter
+} from "@/components/ui/dialog";
+
+
 import { OrderFilters } from "@/components/pedidos";
 import OrderDetails from "../components/pedidos/OrderDetails.js";
 import { OrderService } from "../services/OrderService";
@@ -46,6 +56,7 @@ export default function Pedidos() {
   const [products, setProducts] = useState<Product[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [ orderToDelete, setOrderToDelete] = useState<Order | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState({
     search: '',
@@ -323,29 +334,61 @@ export default function Pedidos() {
         </div>
 
         {/* Filters */}
-        <OrderFilters filters={filters} onFilterChange={handleFilterChange} />
+        <div className="grid grid-cols-1">
+          <OrderFilters filters={filters} onFilterChange={handleFilterChange} />
+        </div>
 
         {/* Main Content */}
-        <div className="grid lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <OrdersTable
-              orders={filteredOrders}
-              isLoading={isLoading}
-              onSelectOrder={(order) => setSelectedOrder(order)}
-              selectedOrder={selectedOrder}
-            />
-          </div>
-          <div>
-            {selectedOrder && (
-              <OrderDetails
-                order={selectedOrder}
-                products={products}
-                customers={customers}
-                onDelete={handleDeleteOrder}
-              />
-            )}
-          </div>
-        </div>
+        <div className="space-y-4">
+          <OrdersTable
+            orders={filteredOrders}
+            isLoading={isLoading}
+            onSelectOrder={(order) => setSelectedOrder(order)}
+            selectedOrder={selectedOrder}
+            onDeleteOrder={(order) => setOrderToDelete(order)}
+          />
+
+          {/* Modal de Detalhes do Pedido */}
+          {selectedOrder && (
+            <Dialog open onOpenChange={() => setSelectedOrder(null)}>
+              <DialogContent className="max-w-2xl">
+                <OrderDetails
+                  order={selectedOrder}
+                  products={products}
+                  customers={customers}
+                />
+              </DialogContent>
+            </Dialog>
+          )}
+
+          {/* Modal de Exclusão */}
+          {orderToDelete && (
+            <AlertDialog>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Excluir Pedido</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Você tem certeza que deseja excluir o pedido{" "}
+                    <strong>{orderToDelete.order_number}</strong>?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel onClick={() => setOrderToDelete(null)}>
+                    Cancelar
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => {
+                      handleDeleteOrder(orderToDelete.id);
+                      setOrderToDelete(null);
+                    }}
+                  >
+                    Sim, excluir
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+</div>
       </div>
     </div>
   );
