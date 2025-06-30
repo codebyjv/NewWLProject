@@ -9,7 +9,6 @@ import { CustomerService } from "@/services/CustomerService";
 
 import { Package, ShoppingCart, Users, AlertTriangle, TrendingUp, DollarSign } from "lucide-react";
 
-import { format, startOfMonth, endOfMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 import StatsCard from "../components/dashboard/StatsCard";
@@ -19,63 +18,32 @@ import TopProducts from "../components/dashboard/TopProducts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
+import { customersMock } from "@/entities/customer";
+import { ordersMock } from "@/entities/order";
+import { productsMock } from "@/entities/product";
+import { format, startOfMonth, endOfMonth, isThisMonth } from "date-fns";
+
+
 export default function Dashboard() {
-  const [stats, setStats] = useState({
-    totalProducts: 0,
-    totalOrders: 0,
-    totalCustomers: 0,
-    lowStockItems: 0,
-    monthlyRevenue: 0,
-    pendingOrders: 0
-  });
-  const [lowStockProducts, setLowStockProducts] = useState<Product[]>([]);
-  const [recentOrders, setRecentOrders] = useState<Order[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const lowStockProducts = productsMock.filter(p => p.stock_quantity <= p.min_stock).slice(0, 5);
+  const recentOrders = ordersMock.slice(0, 5);
 
-  useEffect(() => {
-    loadDashboardData();
-  }, []);
+  const isLoading = false;
+  const monthlyOrders = ordersMock.filter(order =>
+    isThisMonth(new Date(order.sale_date))
+  );
+  const monthlyRevenue = monthlyOrders.reduce((sum, order) => sum + (order.total_amount || 0), 0);
+  const pendingOrders = ordersMock.filter(order => order.status === "pendente").length;
 
-  const loadDashboardData = async () => {
-    setIsLoading(true);
-    try {
-      const [products = [], orders = [], customers = []] = await Promise.all([
-        ProductService.list().catch(() => []),
-        OrderService.list("-created_date").catch(() => []),
-        CustomerService.list().catch(() => [])
-      ]);
-
-      // Produtos com estoque baixo
-      const lowStock = Array.isArray(products) ? products.filter(p => p.stock_quantity <= p.min_stock) : [];
-      
-      // Pedidos do mês atual
-      const currentMonth = new Date();
-      const monthStart = startOfMonth(currentMonth);
-      const monthEnd = endOfMonth(currentMonth);
-      
-      const monthlyOrders = Array.isArray(orders) ? orders.filter(order => {
-        const orderDate = new Date(order.created_date);
-        return orderDate >= monthStart && orderDate <= monthEnd;
-      }) : [];
-      
-      const monthlyRevenue = monthlyOrders.reduce((sum, order) => sum + (order.total_amount || 0), 0);
-      const pendingOrders = Array.isArray(orders) ? orders.filter(order => order.status === 'pendente').length : 0;
-
-      setStats({
-        totalProducts: Array.isArray(products) ? products.length : 0,
-        totalOrders: Array.isArray(orders) ? orders.length : 0,
-        totalCustomers: Array.isArray(customers) ? customers.length : 0,
-        lowStockItems: lowStock.length,
-        monthlyRevenue,
-        pendingOrders
-      });
-
-      setLowStockProducts(lowStock.slice(0, 5));
-      setRecentOrders(Array.isArray(orders) ? orders.slice(0, 5) : []);
-    } catch (error) {
-      console.error("Erro ao carregar dados do dashboard:", error);
-    }
-    setIsLoading(false);
+  const stats = {
+    totalProducts: productsMock.length,
+    totalOrders: ordersMock.length,
+    totalCustomers: customersMock.length,
+    lowStockItems: lowStockProducts.length,
+    monthlyRevenue: ordersMock
+      .filter(order => isThisMonth(new Date(order.sale_date)))
+      .reduce((sum, order) => sum + (order.total_amount || 0), 0),
+    pendingOrders: ordersMock.filter(order => order.status === "pendente").length
   };
 
   return (
@@ -95,20 +63,11 @@ export default function Dashboard() {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <StatsCard
-            title="Total de Produtos"
-            value={stats.totalProducts}
-            icon={Package}
-            color="blue"
-            isLoading={isLoading}
-            alert={stats.totalProducts > 0 ? "green" : "red"}
-          />
-          <StatsCard
             title="Pedidos do Mês"
             value={stats.totalOrders}
             icon={ShoppingCart}
             color="green"
             isLoading={isLoading}
-            alert={stats.totalOrders > 0 ? "green" : "red"}
           />
           <StatsCard
             title="Clientes Cadastrados"
@@ -116,7 +75,6 @@ export default function Dashboard() {
             icon={Users}
             color="purple"
             isLoading={isLoading}
-            alert={stats.totalCustomers > 0 ? "green" : "red"}
           />
           <StatsCard
             title="Estoque Baixo"
