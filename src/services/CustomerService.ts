@@ -22,7 +22,7 @@ export class CustomerService {
     return response.json();
   }
 
-  static async update(id: Number, customer: Customer) {
+  static async update(id: string, customer: Customer) {
     const response = await fetch(`/api/orders/${customer.id}`, {
       method: 'PUT',
       headers: {
@@ -33,7 +33,7 @@ export class CustomerService {
     return response.json();
   }
 
-  static async delete(id: Number) {
+  static async delete(id: string) {
     const response = await fetch(`/api/orders/${id}`, {
       method: 'DELETE',
     });

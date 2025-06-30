@@ -16,7 +16,31 @@ import { format } from "date-fns";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter
+} from "@/components/ui/dialog";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
+import { customersMock } from "@/entities/customer";
+
 export default function Cadastros() {
+  const [customerToDelete, setCustomerToDelete] = useState<Customer | null>(null);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
@@ -38,10 +62,10 @@ export default function Cadastros() {
   const loadCustomers = async () => {
     setIsLoading(true);
     try {
-      const data = await CustomerService.list("-created_date").catch(() => []);
+      const data = customersMock;
       setCustomers(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error("Erro ao carregar clientes:", error);
+      console.error("Erro ao carregar mock de clientes:", error);
       setCustomers([]);
     }
     setIsLoading(false);
@@ -85,7 +109,7 @@ export default function Cadastros() {
     }));
   };
 
-  const handleDeleteCustomer = async (id: Number) => {
+  const handleDeleteCustomer = async (id: string) => {
     try {
       await CustomerService.delete(id);
       setSelectedCustomer(null);
@@ -223,21 +247,53 @@ export default function Cadastros() {
         />
 
         {/* Main Content */}
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className="space-y-4">
           <div className="lg:col-span-2">
             <CustomerTable 
               customers={filteredCustomers} 
               isLoading={isLoading}
               onSelectCustomer={(customer) => setSelectedCustomer(customer)}
               selectedCustomer={selectedCustomer}
+              setCustomerToDelete={setCustomerToDelete}
             />
           </div>
-          <div>
-            <CustomerDetails 
-              customer={selectedCustomer}
-              onDelete={handleDeleteCustomer}
-            />
-          </div>
+
+          {/* Modal de Detalhes do Cadastro */}
+          {selectedCustomer && (
+            <Dialog open onOpenChange={() => setSelectedCustomer(null)}>
+              <DialogContent className="max-w-2xl">
+                <CustomerDetails customer={selectedCustomer} />
+              </DialogContent>
+            </Dialog>
+          )}
+
+          {/* Modal de Exclusão de Cadastro */}
+          {customerToDelete && (
+            <AlertDialog>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Excluir Cliente</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Tem certeza que deseja excluir o cliente{" "}
+                    <strong>{customerToDelete.nome_fantasia || customerToDelete.razao_social}</strong>?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel onClick={() => setCustomerToDelete(null)}>
+                    Cancelar
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => {
+                      handleDeleteCustomer(customerToDelete.id);
+                      setCustomerToDelete(null);
+                    }}
+                  >
+                    Sim, excluir
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
         </div>
       </div>
     </div>

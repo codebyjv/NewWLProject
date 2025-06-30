@@ -30,7 +30,6 @@ const tipoContribuinteLabels = {
 
 interface CustomerDetailsProps {
   customer: Customer | null;
-  onDelete: (id: number) => void;
 }
 
 const UserIcon = User as React.ComponentType<React.SVGProps<SVGSVGElement>>;
@@ -42,7 +41,7 @@ const PhoneIcon = Phone as React.ComponentType<React.SVGProps<SVGSVGElement>>;
 const MailIcon = Mail as React.ComponentType<React.SVGProps<SVGSVGElement>>;
 const CalendarIcon = Calendar as React.ComponentType<React.SVGProps<SVGSVGElement>>;
 
-export default function CustomerDetails({ customer, onDelete }: CustomerDetailsProps) {
+export default function CustomerDetails({ customer }: CustomerDetailsProps) {
   if (!customer) {
     return (
       <Card>
@@ -78,36 +77,7 @@ export default function CustomerDetails({ customer, onDelete }: CustomerDetailsP
               Detalhes do Cliente
             </div>
             <div className="flex gap-2">
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="destructive" size="sm">
-                    <TrashIcon className="w-4 h-4 mr-2" />
-                    Excluir
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Esta ação não pode ser desfeita. Isso excluirá permanentemente o cliente
-                      <span className="font-bold"> {customer.razao_social}</span> e todos os seus dados.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction>
-                      <Button
-                        onClick={() => onDelete(Number(customer.id))}
-                        variant="destructive"
-                        className="bg-red-600 hover:bg-red-700"
-                      >
-                        Sim, excluir
-                      </Button>
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-              <Link to={createPageUrl(`NovoCliente?id=${customer.id}`)}>
+              <Link to={createPageUrl(`/Cadastros/NovoCliente?id=${customer.id}`)}>
                 <Button variant="outline" size="sm">
                   <EditIcon className="w-4 h-4 mr-2" />
                   Editar

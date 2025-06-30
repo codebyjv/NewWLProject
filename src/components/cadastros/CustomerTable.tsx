@@ -7,9 +7,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Customer } from "@/types/customers";
 import { CustomerTableProps } from "@/types/customerProps";
 
-import { Users } from "lucide-react";
+import { Users, Edit, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+
+import { useNavigate } from "react-router-dom";
 
 const tipoContribuinteLabels = {
   pessoa_fisica: "Pessoa Física",
@@ -18,7 +20,9 @@ const tipoContribuinteLabels = {
   simples_nacional: "Simples Nacional"
 };
 
-export default function CustomerTable({ customers, isLoading, onSelectCustomer, selectedCustomer }: CustomerTableProps) {
+export default function CustomerTable({ customers, isLoading, onSelectCustomer, selectedCustomer, setCustomerToDelete }: CustomerTableProps) {
+  const navigate = useNavigate();
+
   if (isLoading) {
     return (
       <Card>
@@ -68,6 +72,7 @@ export default function CustomerTable({ customers, isLoading, onSelectCustomer, 
                   <TableHead>Tipo</TableHead>
                   <TableHead>Cliente Desde</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -108,6 +113,28 @@ export default function CustomerTable({ customers, isLoading, onSelectCustomer, 
                       }>
                         {customer.is_active ? "Ativo" : "Inativo"}
                       </Badge>
+                    </TableCell>
+                    <TableCell className="text-right space-x-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/NovoCliente?id=${customer.id}`); // ou use createPageUrl
+                        }}
+                        title="Editar cliente"
+                        className="text-gray-700 hover:text-blue-600 transition"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCustomerToDelete(customer);
+                        }}
+                        title="Excluir cliente"
+                        className="text-red-600 hover:text-red-800 transition"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </TableCell>
                   </TableRow>
                 ))}
