@@ -14,8 +14,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, Plus, Package, AlertTriangle } from "lucide-react";
 
 import { productsMock } from "@/entities/product";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Estoque() {
+  const { addToast } = useToast();
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -100,12 +102,22 @@ export default function Estoque() {
         // Simule lógica de append ao array se quiser
       }
 
+      addToast({
+        title:  "Produto salvo com sucesso!",
+        description: "O produto foi salvo com sucesso.",
+      });
+
       setShowForm(false);
       setEditingProduct(undefined);
       // Mantém o mock atual
       setProducts(productsMock);
     } catch (error) {
       console.error("Erro ao simular salvamento do produto:", error);
+      addToast({
+        title: "Erro ao salvar produto",
+        description: "Ocorreu um erro ao salvar o produto. Tente novamente.",
+        variant: "destructive",
+      })
     } finally {
       setIsSaving(false);
     }

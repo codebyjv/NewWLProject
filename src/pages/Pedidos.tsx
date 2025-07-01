@@ -49,8 +49,10 @@ import { ProductService } from "../services/ProductService";
 
 import { ordersMock } from "@/entities/order";
 import { customersMock } from "@/entities/customer";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Pedidos() {
+  const { addToast } = useToast();
   const [orders, setOrders] = useState<Order[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -87,6 +89,11 @@ export default function Pedidos() {
       setCustomers(customersData);
     } catch (error) {
       console.error("Erro ao carregar dados:", error);
+      addToast({
+        title: "Erro ao carregar os dados",
+        description: "Não foi possível carregar os dados. Tente novamente.",
+        variant: "destructive",
+      })
       setOrders([]);
       setCustomers([]);
     }
@@ -176,6 +183,11 @@ export default function Pedidos() {
       setSelectedOrder(null);
     } catch (error) {
       console.error("Erro ao excluir pedido (simulado):", error);
+      addToast({
+        title: "Não foi possível excluir o pedido.",
+        description: "Houve um erro ao excluir o pedido. Tente novamente.",
+        variant: "destructive",
+      })
     }
   };
 

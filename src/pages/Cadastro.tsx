@@ -38,8 +38,10 @@ import {
 } from "@/components/ui/alert-dialog";
 
 import { customersMock } from "@/entities/customer";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Cadastros() {
+  const { addToast } = useToast();
   const [customerToDelete, setCustomerToDelete] = useState<Customer | null>(null);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
@@ -66,6 +68,11 @@ export default function Cadastros() {
       setCustomers(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Erro ao carregar mock de clientes:", error);
+      addToast({
+        title: "Erro ao carregar dados do cliente.",
+        description: "Houve um erro ao carregar os dados. Tente novamente.",
+        variant: "destructive",
+      })
       setCustomers([]);
     }
     setIsLoading(false);

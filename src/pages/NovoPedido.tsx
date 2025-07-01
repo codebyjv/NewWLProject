@@ -12,9 +12,11 @@ import { CustomerService } from '@/services/CustomerService';
 import { OrderService } from '@/services/OrderService';
 import OrderForm from "@/components/pedidos/OrderForm";
 import { Routes } from "@/utils/routes";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function NovoPedido() {
   const navigate = useNavigate();
+  const { addToast } = useToast();
   const { id } = useParams();
   const [order, setOrder] = useState<Order | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
@@ -67,9 +69,19 @@ export default function NovoPedido() {
         }
       }
 
-      navigate(createPageUrl("Pedidos"));
+      addToast({
+        title: id ? "Pedido atualizado!" : "Pedido criado!",
+        description: "Todas as informações foram salvas com sucesso!",
+      })
+
+      navigate(Routes.pedidos);
     } catch (error) {
       console.error("Erro ao salvar pedido:", error);
+      addToast({
+        title: "Erro ao salvar.",
+        description: "Não foi possível salvar as informações. Tente novamente.",
+        variant: "destructive",
+      })
     }
     setIsSaving(false);
   };
