@@ -160,7 +160,7 @@ export default function CustomerForm({ customer, onSave, onCancel, isSaving }: C
               value={formData.cpf_cnpj} 
               onChange={(e) => handleInputChange('cpf_cnpj', e.target.value)}
               required 
-              className={errors.cpf_cnpj ? "border-red-500" : ""} // Apply red border if there's an error
+              className={errors.cpf_cnpj ? "border-red-500" : ""} // aplica uma borda vermelha se houver erros
             />
             {errors.cpf_cnpj && <p className="text-red-500 text-sm mt-1">{errors.cpf_cnpj}</p>}
           </div>

@@ -1,3 +1,16 @@
+export interface OrderFormErrors {
+  customer_cpf_cnpj?: string;
+  customer_name?: string;
+  sale_date?: string;
+  seller?: string;
+  payment_method?: string;
+  items?: string; // erro geral de itens vazios
+  subtotal?: string;
+  total_amount?: string;
+  status?: string;
+  installments?: string;
+}
+
 export interface Order {
   id: number;
   order_number?: string;

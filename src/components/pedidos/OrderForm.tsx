@@ -13,12 +13,13 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "
 
 import { OrderFormProps } from "@/types/orderProps";
 import { OrderFormData, OrderItem, Installment } from "@/types/order";
-import { Order } from "@/types/order";
+import { Order, OrderFormErrors } from "@/types/order";
 
 import { Plus, Trash2, Search, Check, ChevronsUpDown } from "lucide-react";
 import { addDays, format as formatDate } from "date-fns";
 
 export default function OrderForm({ order, products = [], customers = [], onSave, onCancel, isSaving }: OrderFormProps) {
+  const [errors, setErrors] = useState<OrderFormErrors>({});
   const [formData, setFormData] = useState<Partial<OrderFormData>>({
       customer_cpf_cnpj: "",
       customer_name: "",
@@ -36,10 +37,6 @@ export default function OrderForm({ order, products = [], customers = [], onSave
       total_amount: 0
   });
   
-  console.log("👉 Order recebido:", order);
-  console.log("👉 FormData atual:", formData);
-
-
   const [itemForm, setItemForm] = useState({
     product_id: "",
     quantity: 1,
@@ -213,7 +210,10 @@ export default function OrderForm({ order, products = [], customers = [], onSave
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="customer_cpf_cnpj">Cliente *</Label>
-            <Popover open={customerSearchOpen} onOpenChange={setCustomerSearchOpen}>
+            <Popover
+              open={customerSearchOpen}
+              onOpenChange={setCustomerSearchOpen}
+            >
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
@@ -222,14 +222,15 @@ export default function OrderForm({ order, products = [], customers = [], onSave
                   className="w-full justify-between"
                 >
                   {/* Display selected customer's name */}
-                  {formData.customer_name || "Selecione ou busque um cliente..."}
+                  {formData.customer_name ||
+                    "Selecione ou busque um cliente..."}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
               {/* Set popover width to match trigger */}
               <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
                 <Command>
-                  <CommandInput 
+                  <CommandInput
                     placeholder="Busque por nome ou CPF/CNPJ..."
                     value={customerSearchText}
                     onValueChange={setCustomerSearchText}
@@ -241,7 +242,10 @@ export default function OrderForm({ order, products = [], customers = [], onSave
                         key={customer.id}
                         value={`${customer.razao_social} ${customer.cpf_cnpj}`}
                         onSelect={() => {
-                          handleInputChange('customer_cpf_cnpj', customer.cpf_cnpj);
+                          handleInputChange(
+                            "customer_cpf_cnpj",
+                            customer.cpf_cnpj
+                          );
                           setCustomerSearchText("");
                           setCustomerSearchOpen(false);
                         }}
@@ -257,13 +261,13 @@ export default function OrderForm({ order, products = [], customers = [], onSave
               </PopoverContent>
             </Popover>
           </div>
-          
+
           <div>
             <Label htmlFor="customer_name">CPF/CNPJ Selecionado</Label>
-            <Input 
-              id="customer_name" 
+            <Input
+              id="customer_name"
               value={formData.customer_cpf_cnpj}
-              readOnly 
+              readOnly
               className="bg-gray-100"
             />
           </div>
@@ -278,35 +282,50 @@ export default function OrderForm({ order, products = [], customers = [], onSave
         <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <Label htmlFor="sale_date">Data da Venda</Label>
-            <Input 
-              id="sale_date" 
+            <Input
+              id="sale_date"
               type="date"
-              value={formData.sale_date} 
-              onChange={(e) => handleInputChange('sale_date', e.target.value)}
-              required 
+              value={formData.sale_date}
+              onChange={(e) => handleInputChange("sale_date", e.target.value)}
+              required
+              className={errors.sale_date ? "border-red-500" : ""}
             />
+            {errors.sale_date && (
+              <p className="text-red-500 text-sm mt-1">{errors.sale_date}</p>
+            )}
           </div>
-          
+
           <div>
             <Label htmlFor="seller">Vendedor</Label>
-            <Input 
-              id="seller" 
-              value={formData.seller} 
-              onChange={(e) => handleInputChange('seller', e.target.value)}
-              required 
+            <Input
+              id="seller"
+              value={formData.seller}
+              onChange={(e) => handleInputChange("seller", e.target.value)}
+              required
+              className={errors.seller ? "border-red-500" : ""}
             />
+            {errors.seller && (
+              <p className="text-red-500 text-sm mt-1">{errors.seller}</p>
+            )}
           </div>
-          
+
           <div>
             <Label htmlFor="payment_method">Forma de Pagamento</Label>
-            <Select value={formData.payment_method} onValueChange={(value) => handleInputChange('payment_method', value)}>
+            <Select
+              value={formData.payment_method}
+              onValueChange={(value) =>
+                handleInputChange("payment_method", value)
+              }
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="boleto_bancario">Boleto Bancário</SelectItem>
                 <SelectItem value="pix">PIX</SelectItem>
-                <SelectItem value="cartao_credito">Cartão de Crédito</SelectItem>
+                <SelectItem value="cartao_credito">
+                  Cartão de Crédito
+                </SelectItem>
                 <SelectItem value="cartao_debito">Cartão de Débito</SelectItem>
                 <SelectItem value="dinheiro">Dinheiro</SelectItem>
               </SelectContent>
@@ -316,7 +335,8 @@ export default function OrderForm({ order, products = [], customers = [], onSave
       </Card>
 
       {/* Parcelamento */}
-      {(formData.payment_method === "boleto_bancario" || formData.payment_method === "cartao_credito") && (
+      {(formData.payment_method === "boleto_bancario" ||
+        formData.payment_method === "cartao_credito") && (
         <Card>
           <CardHeader>
             <CardTitle>Detalhes do Parcelamento</CardTitle>
@@ -324,12 +344,14 @@ export default function OrderForm({ order, products = [], customers = [], onSave
           <CardContent className="space-y-4">
             <div>
               <Label htmlFor="numInstallments">Número de Parcelas</Label>
-              <Input 
+              <Input
                 id="numInstallments"
                 type="number"
                 min="1"
                 value={numInstallments}
-                onChange={(e) => setNumInstallments(parseInt(e.target.value) || 1)}
+                onChange={(e) =>
+                  setNumInstallments(parseInt(e.target.value) || 1)
+                }
               />
             </div>
             {formData.installments && formData.installments.length > 0 && (
@@ -345,8 +367,15 @@ export default function OrderForm({ order, products = [], customers = [], onSave
                   {formData.installments.map((inst, index) => (
                     <TableRow key={index}>
                       <TableCell>{inst.number}</TableCell>
-                      <TableCell>{formatDate(new Date(inst.due_date), 'dd/MM/yyyy')}</TableCell>
-                      <TableCell>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(inst.value)}</TableCell>
+                      <TableCell>
+                        {formatDate(new Date(inst.due_date), "dd/MM/yyyy")}
+                      </TableCell>
+                      <TableCell>
+                        {new Intl.NumberFormat("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        }).format(inst.value)}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -365,18 +394,21 @@ export default function OrderForm({ order, products = [], customers = [], onSave
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
             <div>
               <Label htmlFor="product">Produto</Label>
-              <Select value={itemForm.product_id} onValueChange={(value) => {
-                const product = safeProducts.find(p => p.id === value);
-                handleItemChange('product_id', value);
-                if (product) {
-                  handleItemChange('unit_price', product.unit_price || 0);
-                }
-              }}>
+              <Select
+                value={itemForm.product_id}
+                onValueChange={(value) => {
+                  const product = safeProducts.find((p) => p.id === value);
+                  handleItemChange("product_id", value);
+                  if (product) {
+                    handleItemChange("unit_price", product.unit_price || 0);
+                  }
+                }}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione um produto" />
                 </SelectTrigger>
                 <SelectContent>
-                  {safeProducts.map(product => (
+                  {safeProducts.map((product) => (
                     <SelectItem key={product.id} value={product.id}>
                       {product.weight} - {product.name}
                     </SelectItem>
@@ -384,43 +416,54 @@ export default function OrderForm({ order, products = [], customers = [], onSave
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div>
               <Label htmlFor="quantity">Quantidade</Label>
-              <Input 
-                id="quantity" 
-                type="number" 
+              <Input
+                id="quantity"
+                type="number"
                 min="1"
-                value={itemForm.quantity} 
-                onChange={(e) => handleItemChange('quantity', parseInt(e.target.value) || 1)}
+                value={itemForm.quantity}
+                onChange={(e) =>
+                  handleItemChange("quantity", parseInt(e.target.value) || 1)
+                }
               />
             </div>
-            
+
             <div>
               <Label htmlFor="unit_price">Preço Unitário</Label>
-              <Input 
-                id="unit_price" 
-                type="number" 
+              <Input
+                id="unit_price"
+                type="number"
                 step="0.01"
-                value={itemForm.unit_price} 
-                onChange={(e) => handleItemChange('unit_price', parseFloat(e.target.value) || 0)}
+                value={itemForm.unit_price}
+                onChange={(e) =>
+                  handleItemChange(
+                    "unit_price",
+                    parseFloat(e.target.value) || 0
+                  )
+                }
               />
             </div>
-            
+
             <div>
               <Label htmlFor="discount">Desconto</Label>
-              <Input 
-                id="discount" 
-                type="number" 
+              <Input
+                id="discount"
+                type="number"
                 step="0.01"
-                value={itemForm.discount} 
-                onChange={(e) => handleItemChange('discount', parseFloat(e.target.value) || 0)}
+                value={itemForm.discount}
+                onChange={(e) =>
+                  handleItemChange("discount", parseFloat(e.target.value) || 0)
+                }
               />
             </div>
-            
-            <Button 
-              // type="button" 
-              onClick={addItem} className="bg-red-600 hover:bg-red-700">
+
+            <Button
+              // type="button"
+              onClick={addItem}
+              className="bg-red-600 hover:bg-red-700"
+            >
               <Plus className="w-4 h-4 mr-2" />
               Adicionar
             </Button>
@@ -451,14 +494,30 @@ export default function OrderForm({ order, products = [], customers = [], onSave
                   <TableRow key={index}>
                     <TableCell>{item.product_name}</TableCell>
                     <TableCell>{item.quantity}</TableCell>
-                    <TableCell>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.unit_price)}</TableCell>
-                    <TableCell>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.discount || 0)}</TableCell>
-                    <TableCell className="font-bold">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.total_price)}</TableCell>
                     <TableCell>
-                      <Button 
-                        variant="default" 
-                        size="sm" 
-                        onClick={() => removeItem(index)}>
+                      {new Intl.NumberFormat("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      }).format(item.unit_price)}
+                    </TableCell>
+                    <TableCell>
+                      {new Intl.NumberFormat("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      }).format(item.discount || 0)}
+                    </TableCell>
+                    <TableCell className="font-bold">
+                      {new Intl.NumberFormat("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      }).format(item.total_price)}
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="default"
+                        size="sm"
+                        onClick={() => removeItem(index)}
+                      >
                         <Trash2 className="w-4 h-4 text-red-500" />
                       </Button>
                     </TableCell>
@@ -478,52 +537,61 @@ export default function OrderForm({ order, products = [], customers = [], onSave
         <CardContent className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
             <Label htmlFor="discount_total">Desconto Total</Label>
-            <Input 
-              id="discount_total" 
-              type="number" 
+            <Input
+              id="discount_total"
+              type="number"
               step="0.01"
-              value={formData.discount_total} 
+              value={formData.discount_total}
               onChange={(e) => {
-                handleInputChange('discount_total', parseFloat(e.target.value) || 0);
+                handleInputChange(
+                  "discount_total",
+                  parseFloat(e.target.value) || 0
+                );
               }}
             />
           </div>
-          
+
           <div>
             <Label htmlFor="shipping_cost">Frete</Label>
-            <Input 
-              id="shipping_cost" 
-              type="number" 
+            <Input
+              id="shipping_cost"
+              type="number"
               step="0.01"
-              value={formData.shipping_cost} 
+              value={formData.shipping_cost}
               onChange={(e) => {
-                handleInputChange('shipping_cost', parseFloat(e.target.value) || 0);
+                handleInputChange(
+                  "shipping_cost",
+                  parseFloat(e.target.value) || 0
+                );
               }}
             />
           </div>
-          
+
           <div>
             <Label htmlFor="additional_cost">Acréscimo</Label>
-            <Input 
-              id="additional_cost" 
-              type="number" 
+            <Input
+              id="additional_cost"
+              type="number"
               step="0.01"
-              value={formData.additional_cost} 
+              value={formData.additional_cost}
               onChange={(e) => {
-                handleInputChange('additional_cost', parseFloat(e.target.value) || 0);
+                handleInputChange(
+                  "additional_cost",
+                  parseFloat(e.target.value) || 0
+                );
               }}
             />
           </div>
-          
+
           <div>
             <Label htmlFor="tax_cost">Impostos</Label>
-            <Input 
-              id="tax_cost" 
-              type="number" 
+            <Input
+              id="tax_cost"
+              type="number"
               step="0.01"
-              value={formData.tax_cost} 
+              value={formData.tax_cost}
               onChange={(e) => {
-                handleInputChange('tax_cost', parseFloat(e.target.value) || 0);
+                handleInputChange("tax_cost", parseFloat(e.target.value) || 0);
               }}
             />
           </div>
@@ -536,7 +604,10 @@ export default function OrderForm({ order, products = [], customers = [], onSave
           <div className="flex justify-between items-center text-2xl font-bold">
             <span>Total do Pedido:</span>
             <span className="text-green-600">
-              {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(formData.total_amount ?? 0)}
+              {new Intl.NumberFormat("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              }).format(formData.total_amount ?? 0)}
             </span>
           </div>
         </CardContent>
@@ -545,25 +616,28 @@ export default function OrderForm({ order, products = [], customers = [], onSave
       {/* Observações */}
       <div>
         <Label htmlFor="observations">Observações</Label>
-        <Textarea 
-          id="observations" 
-          value={formData.observations} 
-          onChange={(e) => handleInputChange('observations', e.target.value)}
+        <Textarea
+          id="observations"
+          value={formData.observations}
+          onChange={(e) => handleInputChange("observations", e.target.value)}
           placeholder="Observações sobre o pedido..."
         />
       </div>
 
       {/* Botões */}
       <div className="flex justify-end gap-4">
-        <Button 
-          type="button" 
-          variant="outline" 
-          onClick={onCancel}>
+        <Button type="button" variant="outline" onClick={onCancel}>
           Cancelar
         </Button>
-        <Button 
-          type="submit" 
-          disabled={isSaving || (formData.items ?? []).length === 0 || !formData.customer_cpf_cnpj || !formData.seller || !formData.payment_method}
+        <Button
+          type="submit"
+          disabled={
+            isSaving ||
+            (formData.items ?? []).length === 0 ||
+            !formData.customer_cpf_cnpj ||
+            !formData.seller ||
+            !formData.payment_method
+          }
           className="bg-red-600 hover:bg-red-700"
         >
           {isSaving ? "Salvando..." : "Salvar Pedido"}
