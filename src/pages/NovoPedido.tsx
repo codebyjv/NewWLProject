@@ -11,6 +11,7 @@ import { ProductService } from '@/services/ProductService';
 import { CustomerService } from '@/services/CustomerService';
 import { OrderService } from '@/services/OrderService';
 import OrderForm from "@/components/pedidos/OrderForm";
+import { Routes } from "@/utils/routes";
 
 export default function NovoPedido() {
   const navigate = useNavigate();
@@ -81,7 +82,7 @@ export default function NovoPedido() {
           <Button
             variant="outline"
             size="md"
-            onClick={() => navigate(createPageUrl("/Pedidos"))}
+            onClick={() => navigate(Routes.pedidos)}
           >
             <ArrowLeft className="w-4 h-4" />
           </Button>
@@ -132,7 +133,7 @@ export default function NovoPedido() {
                 products={products}
                 customers={customers}
                 onSave={handleSaveOrder}
-                onCancel={() => navigate(createPageUrl("/Pedidos"))}
+                onCancel={() => navigate(Routes.pedidos)}
                 isSaving={isSaving}
               />
             )}

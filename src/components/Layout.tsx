@@ -40,12 +40,12 @@ const navigationItems = [
   },
   {
     title: "Estoque",
-    url: createPageUrl("/Estoque"),
+    url: Routes.estoque,
     icon: Package,
   },
   {
     title: "Pedidos",
-    url: createPageUrl("/Pedidos"),
+    url: Routes.pedidos,
     icon: ShoppingCart,
   },
   {
