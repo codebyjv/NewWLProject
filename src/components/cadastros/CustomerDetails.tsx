@@ -20,6 +20,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Customer } from "@/types/customers";
+import { toEditCustomer } from "@/utils/routes";
 
 const tipoContribuinteLabels = {
   pessoa_fisica: "Pessoa Física",
@@ -77,7 +78,7 @@ export default function CustomerDetails({ customer }: CustomerDetailsProps) {
               Detalhes do Cliente
             </div>
             <div className="flex gap-2">
-              <Link to={createPageUrl(`/Cadastros/NovoCliente?id=${customer.id}`)}>
+              <Link to={toEditCustomer(customer.id)}>
                 <Button variant="outline" size="sm">
                   <EditIcon className="w-4 h-4 mr-2" />
                   Editar

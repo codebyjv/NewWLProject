@@ -12,6 +12,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 import { useNavigate } from "react-router-dom";
+import { toEditCustomer } from "@/utils/routes";
 
 const tipoContribuinteLabels = {
   pessoa_fisica: "Pessoa Física",
@@ -118,7 +119,7 @@ export default function CustomerTable({ customers, isLoading, onSelectCustomer, 
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate(`/Cadastros/NovoCliente?id=${customer.id}`);
+                          navigate(toEditCustomer(customer.id));
                         }}
                         title="Editar cliente"
                         className="text-gray-700 hover:text-blue-600 transition"

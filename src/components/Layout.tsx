@@ -23,7 +23,9 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+
 import { Badge } from "@/components/ui/badge";
+import { Routes } from "@/utils/routes";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -48,7 +50,7 @@ const navigationItems = [
   },
   {
     title: "Cadastros",
-    url: createPageUrl("/Cadastros"),
+    url: Routes.cadastros,
     icon: Users,
   },
 ];

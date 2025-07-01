@@ -11,6 +11,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 
 import CustomerForm from "../components/cadastros/CustomerForm";
+import { Routes } from "@/utils/routes";
 
 export default function NovoCliente() {
   const navigate = useNavigate();
@@ -59,7 +60,7 @@ export default function NovoCliente() {
           <Button
             variant="outline"
             size="md"
-            onClick={() => navigate(createPageUrl("/Cadastros"))}
+            onClick={() => navigate(Routes.cadastros)}
           >
             <ArrowLeft className="w-4 h-4" />
           </Button>
