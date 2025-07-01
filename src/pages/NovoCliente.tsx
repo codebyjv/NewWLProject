@@ -12,9 +12,11 @@ import { createPageUrl } from "@/utils";
 
 import CustomerForm from "../components/cadastros/CustomerForm";
 import { Routes } from "@/utils/routes";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function NovoCliente() {
   const navigate = useNavigate();
+  const { addToast } = useToast();
   const { id } = useParams();
   const [customer, setCustomer] = useState<Customer | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
@@ -41,13 +43,24 @@ export default function NovoCliente() {
     setIsSaving(true);
     try {
       if (id) {
-        await CustomerService.update(Number(id), customerData);
+        await CustomerService.update(id, customerData);
       } else {
         await CustomerService.create(customerData);
       }
+
+      addToast({
+        title: id ? "Cliente atualizado!" : "Cliente cadastrado!",
+        description: "As informações foram salvas com sucesso!",
+      });
+
       navigate(createPageUrl("Cadastros"));
     } catch (error) {
       console.error("Erro ao salvar cliente:", error);
+      addToast({
+        title: "Erro ao salvar.",
+        description: "Não foi possível salvar o cliente. Tente novamente.",
+        variant: "destructive",
+      });
     }
     setIsSaving(false);
   };
