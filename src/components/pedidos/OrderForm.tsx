@@ -134,6 +134,7 @@ export default function OrderForm({ order, products = [], customers = [], onSave
       }
       return updated;
     });
+    setErrors(prev => ({ ...prev, [field]: undefined }));
   };
 
   const handleItemChange = (field: string, value: string | number) => {
@@ -187,8 +188,43 @@ export default function OrderForm({ order, products = [], customers = [], onSave
     }, 0);
   };
 
+  const validateOrder = (): OrderFormErrors => {
+  const newErrors: OrderFormErrors = {};
+
+    if (!formData.customer_cpf_cnpj) {
+      newErrors.customer_cpf_cnpj = "Informe o CPF ou CNPJ do cliente.";
+    }
+
+    if (!formData.sale_date) {
+      newErrors.sale_date = "Informe a data da venda.";
+    }
+
+    if (!formData.seller) {
+      newErrors.seller = "Informe o nome do vendedor.";
+    }
+
+    if (!formData.payment_method) {
+      newErrors.payment_method = "Selecione a forma de pagamento.";
+    }
+
+    if (!formData.items || formData.items.length === 0) {
+      newErrors.items = "Adicione pelo menos um item ao pedido.";
+    }
+
+    return newErrors;
+  };
+
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const validationErrors = validateOrder();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    setErrors({}); // limpa erros antigos
     onSave(formData as Order);
   };
 
