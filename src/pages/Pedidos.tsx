@@ -100,23 +100,6 @@ export default function Pedidos() {
     setIsLoading(false);
   };
 
-
-  useEffect(() => {
-    const loadInitialData = async () => {
-      try {
-        const [productsData, customersData] = await Promise.all([
-          ProductService.list(), 
-          CustomerService.list() 
-        ]);
-        setProducts(productsData);
-        setCustomers(customersData);
-      } catch (error) {
-        console.error("Erro ao carregar dados:", error);
-      }
-    };
-    loadInitialData();
-  }, []);
-
   const filterOrders = () => {
     let filtered = Array.isArray(orders) ? orders : [];
 
