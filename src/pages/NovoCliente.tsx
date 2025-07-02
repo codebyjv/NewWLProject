@@ -14,6 +14,7 @@ import CustomerForm from "../components/cadastros/CustomerForm";
 import { Routes } from "@/utils/routes";
 import { useToast } from "@/components/ui/use-toast";
 
+
 export default function NovoCliente() {
   const navigate = useNavigate();
   const { addToast } = useToast();

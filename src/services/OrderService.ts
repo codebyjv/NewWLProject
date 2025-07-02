@@ -1,6 +1,3 @@
-import { ordersMock } from "@/entities/order";
-import { Order } from "@/types/order";
-
 export class OrderService {
   static async list(sort?: string) {
     const response = await fetch(`/api/orders?sort=${sort || ''}`);
@@ -14,13 +11,20 @@ export class OrderService {
     return response.json();
   }
 
-  static async get(id: number): Promise<Order | null> {
-    const order = ordersMock.find((o) => o.id === id);
-    if (!order) {
-      console.warn(`Mock: Pedido com id ${id} não encontrado.`);
-      return null;
+  static async get(id: number) {
+    const response = await fetch(`/api/orders/${id}`);
+
+    if (!response.ok) {
+      const fallback = await response.text(); // pode ser HTML de erro
+      throw new Error(`Erro ao buscar pedido ${id} (${response.status}): ${fallback.slice(0, 80)}...`);
     }
-    return Promise.resolve(order);
+
+    const contentType = response.headers.get("content-type");
+    if (contentType?.includes("application/json")) {
+      return response.json();
+    }
+
+    return null;
   }
 
   static async update(id: number, order: any) {

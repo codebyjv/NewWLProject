@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { CustomerFormProps } from "@/types/customerProps";
 
@@ -16,6 +16,7 @@ import {
   Endereco,
   AllFields
 } from "@/types/customers";
+import { CustomerService } from "@/services/CustomerService";
 
 
 import { Plus, Trash2 } from "lucide-react";
@@ -42,6 +43,41 @@ export default function CustomerForm({ customer, onSave, onCancel, isSaving }: C
     observacoes: customer?.observacoes || "",
     is_active: customer?.is_active ?? true
   });
+
+  useEffect(() => {
+    const cleaned = formData.cpf_cnpj.replace(/\D/g, "");
+    if (cleaned.length === 14) {
+      CustomerService.fetchCNPJData(cleaned).then((data) => {
+        if (data?.estabelecimento) {
+          const est = data.estabelecimento;
+          const razao = data.razao_social;
+          const fantasia = est.nome_fantasia;
+          const endereco = est;
+
+          const inscricao_estadual = est.inscricoes_estaduais?.find((ie: any) => ie.ativo)?.inscricao_estadual ?? "";
+
+          setFormData((prev) => ({
+            ...prev,
+            razao_social: razao ?? "",
+            nome_fantasia: fantasia ?? "",
+            ie_rg: inscricao_estadual ?? "",
+            endereco: {
+              ...prev.endereco,
+              cep: endereco.cep ?? "",
+              cidade_uf: `${endereco.cidade.nome}/${endereco.estado.sigla}`,
+              logradouro: endereco.logradouro ?? "",
+              numero: endereco.numero ?? "",
+              bairro: endereco.bairro ?? "",
+              complemento: endereco.complemento ?? "",
+            },
+          }));
+        } else {
+          console.warn("CNPJ não encontrado na CNPJ.ws");
+        }
+      });
+    }
+  }, [formData.cpf_cnpj]);
+
 
   const handleInputChange = (field: AllFields, value: any) => {
     setErrors(prev => {
@@ -153,16 +189,21 @@ export default function CustomerForm({ customer, onSave, onCancel, isSaving }: C
           <CardTitle>Dados Básicos</CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
+          <div className="space-y-1">
             <Label htmlFor="cpf_cnpj">CPF/CNPJ *</Label>
-            <Input 
-              id="cpf_cnpj" 
-              value={formData.cpf_cnpj} 
-              onChange={(e) => handleInputChange('cpf_cnpj', e.target.value)}
-              required 
-              className={errors.cpf_cnpj ? "border-red-500" : ""} // aplica uma borda vermelha se houver erros
+            <Input
+              id="cpf_cnpj"
+              type="text"
+              inputMode="numeric"
+              placeholder="Digite o CPF ou CNPJ"
+              value={formData.cpf_cnpj}
+              onChange={(e) => handleInputChange("cpf_cnpj", e.target.value)}
+              required
+              className={errors.cpf_cnpj ? "border-red-500 focus-visible:ring-red-500" : ""}
             />
-            {errors.cpf_cnpj && <p className="text-red-500 text-sm mt-1">{errors.cpf_cnpj}</p>}
+            {errors.cpf_cnpj && (
+              <p className="text-red-500 text-sm">{errors.cpf_cnpj}</p>
+            )}
           </div>
           
           <div>

@@ -39,4 +39,23 @@ export class CustomerService {
     });
     return response.json();
   }
+
+  static async fetchCNPJData(cnpj: string): Promise<any> {
+    try {
+      // Remove qualquer pontuação
+      const cleaned = cnpj.replace(/\D/g, "");
+
+      const response = await fetch(`https://publica.cnpj.ws/cnpj/${cleaned}`);
+      if (!response.ok) {
+        throw new Error(`Erro na consulta: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Erro ao consultar CNPJ.ws:", error);
+      return null;
+    }
+  }
+  
 }
