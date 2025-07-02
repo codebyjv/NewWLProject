@@ -17,40 +17,56 @@ import { Order, OrderFormErrors } from "@/types/order";
 
 import { Plus, Trash2, Search, Check, ChevronsUpDown } from "lucide-react";
 import { addDays, format as formatDate } from "date-fns";
+import { useComboSearch } from "@/hooks/useComboSearch";
 
 export default function OrderForm({ order, products = [], customers = [], onSave, onCancel, isSaving }: OrderFormProps) {
+  // Garantir que products e customers sejam arrays válidos
+  const safeProducts = Array.isArray(products) ? products : [];
+  const safeCustomers = Array.isArray(customers) ? customers : [];
+
+  // Hook de autocomplete para cliente
+  const {
+    searchText: customerSearchText,
+    setSearchText: setCustomerSearchText,
+    showSuggestions: showCustomerSuggestions,
+    setShowSuggestions: setShowCustomerSuggestions,
+    filteredItems: filteredSearchCustomers,
+  } = useComboSearch(safeCustomers, ["razao_social", "cpf_cnpj"]);
+
+  // Hook de autocomplete para produto
+  const {
+    searchText: productSearchText,
+    setSearchText: setProductSearchText,
+    showSuggestions: showProductSuggestions,
+    setShowSuggestions: setShowProductSuggestions,
+    filteredItems: filteredSearchProducts,
+  } = useComboSearch(safeProducts, ["name", "weight"]);
+
+  const [numInstallments, setNumInstallments] = useState(1);
   const [errors, setErrors] = useState<OrderFormErrors>({});
   const [formData, setFormData] = useState<Partial<OrderFormData>>({
-      customer_cpf_cnpj: "",
-      customer_name: "",
-      sale_date: new Date().toISOString().split('T')[0],
-      seller: "",
-      payment_method: "pix",
-      observations: "",
-      items: [],
-      subtotal: 0,
-      discount_total: 0,
-      shipping_cost: 0,
-      additional_cost: 0,
-      tax_cost: 0,
-      installments: [],
-      total_amount: 0
+    customer_cpf_cnpj: "",
+    customer_name: "",
+    sale_date: new Date().toISOString().split("T")[0],
+    seller: "",
+    payment_method: "pix",
+    observations: "",
+    items: [],
+    subtotal: 0,
+    discount_total: 0,
+    shipping_cost: 0,
+    additional_cost: 0,
+    tax_cost: 0,
+    installments: [],
+    total_amount: 0,
   });
-  
+
   const [itemForm, setItemForm] = useState({
     product_id: "",
     quantity: 1,
     unit_price: 0,
-    discount: 0
+    discount: 0,
   });
-
-  const [customerSearchOpen, setCustomerSearchOpen] = useState(false);
-  const [customerSearchText, setCustomerSearchText] = useState("");
-  const [numInstallments, setNumInstallments] = useState(1);
-
-  // Garantir que products e customers sejam arrays válidos
-  const safeProducts = Array.isArray(products) ? products : [];
-  const safeCustomers = Array.isArray(customers) ? customers : [];
 
   useEffect(() => {
     if (order) {
@@ -58,7 +74,9 @@ export default function OrderForm({ order, products = [], customers = [], onSave
       setFormData({
         customer_cpf_cnpj: order.customer_cpf_cnpj || "",
         customer_name: order.customer_name || "",
-        sale_date: order.sale_date ? new Date(order.sale_date).toISOString().split('T')[0] : "",
+        sale_date: order.sale_date
+          ? new Date(order.sale_date).toISOString().split("T")[0]
+          : "",
         seller: order.seller || "",
         payment_method: order.payment_method || "pix",
         observations: order.observations || "",
@@ -68,8 +86,10 @@ export default function OrderForm({ order, products = [], customers = [], onSave
         shipping_cost: order.shipping_cost ?? 0,
         additional_cost: order.additional_cost ?? 0,
         tax_cost: order.tax_cost ?? 0,
-        installments: Array.isArray(order.installments) ? order.installments : [],
-        total_amount: order.total_amount ?? 0
+        installments: Array.isArray(order.installments)
+          ? order.installments
+          : [],
+        total_amount: order.total_amount ?? 0,
       });
       setNumInstallments(order.installments?.length || 1);
     } else {
@@ -88,44 +108,64 @@ export default function OrderForm({ order, products = [], customers = [], onSave
         additional_cost: 0,
         tax_cost: 0,
         installments: [],
-        total_amount: 0
+        total_amount: 0,
       });
       setNumInstallments(1);
     }
   }, [order]);
 
-  
   useEffect(() => {
     calculateTotals();
-  }, [formData.items, formData.discount_total, formData.shipping_cost, formData.additional_cost, formData.tax_cost]);
+  }, [
+    formData.items,
+    formData.discount_total,
+    formData.shipping_cost,
+    formData.additional_cost,
+    formData.tax_cost,
+  ]);
 
   useEffect(() => {
-    if (["boleto_bancario", "cartao_credito"].includes(formData.payment_method ?? "")) {
+    if (
+      ["boleto_bancario", "cartao_credito"].includes(
+        formData.payment_method ?? ""
+      )
+    ) {
       generateInstallments();
     } else {
-      setFormData(prev => ({...prev, installments: []}));
+      setFormData((prev) => ({ ...prev, installments: [] }));
     }
-  }, [numInstallments, formData.total_amount, formData.payment_method, formData.sale_date]);
-  
+  }, [
+    numInstallments,
+    formData.total_amount,
+    formData.payment_method,
+    formData.sale_date,
+  ]);
+
   const generateInstallments = () => {
     if (numInstallments > 0 && (formData.total_amount ?? 0) > 0) {
       const installmentValue = (formData.total_amount ?? 0) / numInstallments;
-      const newInstallments = Array.from({ length: numInstallments }, (_, i) => ({
-        number: i + 1,
-        value: installmentValue,
-        due_date: formatDate(addDays(new Date(formData.sale_date ?? ""), (i + 1) * 30), 'yyyy-MM-dd')
-      }));
-      setFormData(prev => ({ ...prev, installments: newInstallments }));
+      const newInstallments = Array.from(
+        { length: numInstallments },
+        (_, i) => ({
+          number: i + 1,
+          value: installmentValue,
+          due_date: formatDate(
+            addDays(new Date(formData.sale_date ?? ""), (i + 1) * 30),
+            "yyyy-MM-dd"
+          ),
+        })
+      );
+      setFormData((prev) => ({ ...prev, installments: newInstallments }));
     } else {
-      setFormData(prev => ({ ...prev, installments: [] }));
+      setFormData((prev) => ({ ...prev, installments: [] }));
     }
   };
 
   const handleInputChange = (field: string, value: string | number) => {
-    setFormData(prev => {
+    setFormData((prev) => {
       const updated = { ...prev, [field]: value };
-      if (field === 'customer_cpf_cnpj') {
-        const customer = safeCustomers.find(c => c.cpf_cnpj === value);
+      if (field === "customer_cpf_cnpj") {
+        const customer = safeCustomers.find((c) => c.cpf_cnpj === value);
         if (customer) {
           updated.customer_name = customer.razao_social;
         } else {
@@ -134,62 +174,84 @@ export default function OrderForm({ order, products = [], customers = [], onSave
       }
       return updated;
     });
-    setErrors(prev => ({ ...prev, [field]: undefined }));
+    setErrors((prev) => ({ ...prev, [field]: undefined }));
   };
 
   const handleItemChange = (field: string, value: string | number) => {
-    setItemForm(prev => ({ ...prev, [field]: value }));
+    setItemForm((prev) => ({ ...prev, [field]: value }));
   };
 
   const addItem = () => {
-    if (!itemForm.product_id || itemForm.quantity <= 0 || itemForm.unit_price < 0) return;
+    if (
+      !itemForm.product_id ||
+      itemForm.quantity <= 0 ||
+      itemForm.unit_price < 0
+    )
+      return;
 
-    const product = safeProducts.find(p => p.id === itemForm.product_id);
+    const product = safeProducts.find((p) => p.id === itemForm.product_id);
     if (!product) return;
 
-    const total_price = (itemForm.quantity * itemForm.unit_price) - (itemForm.discount || 0);
-    
+    const total_price =
+      itemForm.quantity * itemForm.unit_price - (itemForm.discount || 0);
+
     const newItem = {
       product_id: itemForm.product_id,
       product_name: product.name,
       quantity: itemForm.quantity,
       unit_price: itemForm.unit_price,
       total_price,
-      discount: itemForm.discount || 0
+      discount: itemForm.discount || 0,
     };
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      items: [...prev.items ?? [], newItem]
+      items: [...(prev.items ?? []), newItem],
     }));
 
     setItemForm({
       product_id: "",
       quantity: 1,
       unit_price: 0,
-      discount: 0
+      discount: 0,
     });
+
+    setProductSearchText("");
+    setShowProductSuggestions(false);
   };
 
   const removeItem = (index: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      items: prev.items ?? [].filter((_, i) => i !== index)
+      items: prev.items ?? [].filter((_, i) => i !== index),
     }));
   };
 
   const calculateTotals = () => {
-    setTimeout(() => {
-      setFormData(prev => {
-        const subtotal = (prev.items ?? []).reduce((sum, item) => sum + item.total_price, 0);
-        const total_amount = subtotal - (prev.discount_total || 0) + (prev.shipping_cost || 0) + (prev.additional_cost || 0) + (prev.tax_cost || 0);
-        return { ...prev, subtotal, total_amount };
-      });
-    }, 0);
+    const round = (n: number) => Math.round(n * 100) / 100;
+    setFormData((prev) => {
+      const subtotal = (prev.items ?? []).reduce(
+        (sum, item) => sum + item.total_price,
+        0
+      );
+
+      const total_amount =
+        subtotal -
+        (prev.discount_total || 0) +
+        (prev.shipping_cost || 0) +
+        (prev.additional_cost || 0) +
+        (prev.tax_cost || 0);
+
+      return {
+        ...prev,
+        subtotal: round(subtotal),
+        total_amount: round(total_amount),
+      };
+    });
   };
 
   const validateOrder = (): OrderFormErrors => {
-  const newErrors: OrderFormErrors = {};
+    const newErrors: OrderFormErrors = {};
 
     if (!formData.customer_cpf_cnpj) {
       newErrors.customer_cpf_cnpj = "Informe o CPF ou CNPJ do cliente.";
@@ -214,7 +276,6 @@ export default function OrderForm({ order, products = [], customers = [], onSave
     return newErrors;
   };
 
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -228,14 +289,6 @@ export default function OrderForm({ order, products = [], customers = [], onSave
     onSave(formData as Order);
   };
 
-  // Filter customers based on search text
-  const filteredSearchCustomers = customerSearchText
-    ? safeCustomers.filter(customer =>
-        (customer.razao_social || "").toLowerCase().includes(customerSearchText.toLowerCase()) ||
-        (customer.cpf_cnpj || "").includes(customerSearchText)
-      )
-    : [];
-
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Dados do Cliente */}
@@ -245,57 +298,78 @@ export default function OrderForm({ order, products = [], customers = [], onSave
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="customer_cpf_cnpj">Cliente *</Label>
-            <Popover
-              open={customerSearchOpen}
-              onOpenChange={setCustomerSearchOpen}
-            >
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={customerSearchOpen}
-                  className="w-full justify-between"
-                >
-                  {/* Display selected customer's name */}
-                  {formData.customer_name ||
-                    "Selecione ou busque um cliente..."}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              {/* Set popover width to match trigger */}
-              <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                <Command>
-                  <CommandInput
-                    placeholder="Busque por nome ou CPF/CNPJ..."
-                    value={customerSearchText}
-                    onValueChange={setCustomerSearchText}
-                  />
-                  <CommandEmpty>Nenhum cliente encontrado.</CommandEmpty>
-                  <CommandGroup>
-                    {filteredSearchCustomers.map((customer) => (
-                      <CommandItem
-                        key={customer.id}
-                        value={`${customer.razao_social} ${customer.cpf_cnpj}`}
-                        onSelect={() => {
-                          handleInputChange(
-                            "customer_cpf_cnpj",
-                            customer.cpf_cnpj
-                          );
-                          setCustomerSearchText("");
-                          setCustomerSearchOpen(false);
-                        }}
-                      >
-                        <Check
-                          className={`mr-2 h-4 w-4 ${formData.customer_cpf_cnpj === customer.cpf_cnpj ? "opacity-100" : "opacity-0"}`}
-                        />
-                        {customer.razao_social} ({customer.cpf_cnpj})
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </Command>
-              </PopoverContent>
-            </Popover>
+            <Label htmlFor="customer_search">Cliente *</Label>
+            <Input
+              id="customer_search"
+              type="text"
+              placeholder="Digite nome ou CPF/CNPJ do cliente..."
+              value={customerSearchText}
+              onChange={(e) => {
+                const value = e.target.value;
+                setCustomerSearchText(value);
+                setShowCustomerSuggestions(true);
+
+                const match = safeCustomers.find(
+                  (c) =>
+                    c.razao_social
+                      .toLowerCase()
+                      .includes(value.toLowerCase()) ||
+                    c.cpf_cnpj.includes(value)
+                );
+
+                if (match) {
+                  setFormData((prev) => ({
+                    ...prev,
+                    customer_cpf_cnpj: match.cpf_cnpj,
+                    customer_name: match.razao_social,
+                  }));
+                } else {
+                  setFormData((prev) => ({
+                    ...prev,
+                    customer_cpf_cnpj: "",
+                    customer_name: "",
+                  }));
+                }
+              }}
+              className={errors.customer_cpf_cnpj ? "border-red-500" : ""}
+            />
+            {errors.customer_cpf_cnpj && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.customer_cpf_cnpj}
+              </p>
+            )}
+
+            {/* Lista de sugestões */}
+            {showCustomerSuggestions &&
+              customerSearchText.length > 1 &&
+              filteredSearchCustomers.length > 0 && (
+                <ul className="border border-gray-300 mt-1 rounded shadow-md bg-white max-h-48 overflow-y-auto z-50 relative">
+                  {filteredSearchCustomers.map((customer) => (
+                    <li
+                      key={customer.id}
+                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm"
+                      onClick={() => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          customer_cpf_cnpj: customer.cpf_cnpj,
+                          customer_name: customer.razao_social,
+                        }));
+                        setCustomerSearchText(`${customer.razao_social}`);
+                        setShowCustomerSuggestions(false);
+                      }}
+                    >
+                      {customer.razao_social} ({customer.cpf_cnpj})
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+            {customerSearchText.length > 1 &&
+              filteredSearchCustomers.length === 0 && (
+                <p className="text-sm text-gray-500 mt-1">
+                  Nenhum cliente encontrado.
+                </p>
+              )}
           </div>
 
           <div>
@@ -339,6 +413,7 @@ export default function OrderForm({ order, products = [], customers = [], onSave
               onChange={(e) => handleInputChange("seller", e.target.value)}
               required
               className={errors.seller ? "border-red-500" : ""}
+              placeholder="Digite o nome do vendedor"
             />
             {errors.seller && (
               <p className="text-red-500 text-sm mt-1">{errors.seller}</p>
@@ -427,30 +502,41 @@ export default function OrderForm({ order, products = [], customers = [], onSave
           <CardTitle>Adicionar Item</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-            <div>
-              <Label htmlFor="product">Produto</Label>
-              <Select
-                value={itemForm.product_id}
-                onValueChange={(value) => {
-                  const product = safeProducts.find((p) => p.id === value);
-                  handleItemChange("product_id", value);
-                  if (product) {
-                    handleItemChange("unit_price", product.unit_price || 0);
-                  }
+          {/* Primeira linha: Produto (2/3) e Quantidade (1/3) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 items-end">
+            <div className="relative col-span-2">
+              <Label htmlFor="product_search">Produto *</Label>
+              <Input
+                id="product_search"
+                placeholder="Digite nome ou código do produto..."
+                value={productSearchText}
+                onChange={(e) => {
+                  setProductSearchText(e.target.value);
+                  setShowProductSuggestions(true);
                 }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione um produto" />
-                </SelectTrigger>
-                <SelectContent>
-                  {safeProducts.map((product) => (
-                    <SelectItem key={product.id} value={product.id}>
-                      {product.weight} - {product.name}
-                    </SelectItem>
+                className="w-full"
+              />
+              {showProductSuggestions && filteredSearchProducts.length > 0 && (
+                <ul className="absolute z-50 bg-white border border-gray-300 mt-1 max-h-48 overflow-y-auto shadow rounded text-sm w-full">
+                  {filteredSearchProducts.map((product) => (
+                    <li
+                      key={product.id}
+                      onClick={() => {
+                        handleItemChange("product_id", product.id);
+                        handleItemChange("unit_price", product.unit_price || 0);
+                        setProductSearchText(product.name);
+                        setShowProductSuggestions(false);
+                      }}
+                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    >
+                      {product.name} — {product.weight}
+                    </li>
                   ))}
-                </SelectContent>
-              </Select>
+                </ul>
+              )}
+              {showProductSuggestions && productSearchText.length > 1 && filteredSearchProducts.length === 0 && (
+                <p className="text-sm text-gray-500 mt-1">Nenhum produto encontrado.</p>
+              )}
             </div>
 
             <div>
@@ -460,12 +546,13 @@ export default function OrderForm({ order, products = [], customers = [], onSave
                 type="number"
                 min="1"
                 value={itemForm.quantity}
-                onChange={(e) =>
-                  handleItemChange("quantity", parseInt(e.target.value) || 1)
-                }
+                onChange={(e) => handleItemChange("quantity", parseInt(e.target.value) || 1)}
               />
             </div>
+          </div>
 
+          {/* Segunda linha: Preço Unitário, Desconto e Botão */}
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 items-end">
             <div>
               <Label htmlFor="unit_price">Preço Unitário</Label>
               <Input
@@ -474,10 +561,7 @@ export default function OrderForm({ order, products = [], customers = [], onSave
                 step="0.01"
                 value={itemForm.unit_price}
                 onChange={(e) =>
-                  handleItemChange(
-                    "unit_price",
-                    parseFloat(e.target.value) || 0
-                  )
+                  handleItemChange("unit_price", parseFloat(e.target.value) || 0)
                 }
               />
             </div>
@@ -495,14 +579,16 @@ export default function OrderForm({ order, products = [], customers = [], onSave
               />
             </div>
 
-            <Button
-              // type="button"
-              onClick={addItem}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Adicionar
-            </Button>
+            <div className="lg:col-start-5">
+              <Button
+                type="button"
+                onClick={addItem}
+                className="bg-red-600 hover:bg-red-700 w-full"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Adicionar
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>

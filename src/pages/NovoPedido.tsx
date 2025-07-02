@@ -14,8 +14,12 @@ import OrderForm from "@/components/pedidos/OrderForm";
 import { Routes } from "@/utils/routes";
 import { useToast } from "@/components/ui/use-toast";
 
+import { customersMock } from "@/entities/customer";
+import { productsMock } from "@/entities/product";
+
 export default function NovoPedido() {
   const navigate = useNavigate();
+  const [showSuggestions, setShowSuggestions] = useState(true);
   const { addToast } = useToast();
   const { id } = useParams();
   const [order, setOrder] = useState<Order | null>(null);
@@ -87,7 +91,7 @@ export default function NovoPedido() {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-6 bg-gray-50 max-h-screen">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">
@@ -142,8 +146,8 @@ export default function NovoPedido() {
                     seller: "",
                     delete: false
                   }}
-                products={products}
-                customers={customers}
+                products={productsMock}
+                customers={customersMock}
                 onSave={handleSaveOrder}
                 onCancel={() => navigate(Routes.pedidos)}
                 isSaving={isSaving}
