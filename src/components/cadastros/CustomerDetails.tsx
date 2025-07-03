@@ -23,10 +23,9 @@ import { Customer } from "@/types/customers";
 import { toEditCustomer } from "@/utils/routes";
 
 const tipoContribuinteLabels = {
-  pessoa_fisica: "Pessoa Física",
-  pessoa_juridica: "Pessoa Jurídica",
-  mei: "MEI",
-  simples_nacional: "Simples Nacional"
+  "1": "Contribuinte",
+  "2": "Isento de IE",
+  "9": "Não Contribuinte",
 };
 
 interface CustomerDetailsProps {

@@ -43,7 +43,7 @@ export interface Customer {
   cpf_cnpj: string;
   razao_social: string;
   nome_fantasia: string;
-  tipo_contribuinte: "pessoa_fisica" | "pessoa_juridica" | "mei" | "simples_nacional";
+  tipo_contribuinte: "1" | "2" | "9";
   ie_rg: string;
   cliente_desde: string;
   endereco: Endereco;
@@ -73,7 +73,7 @@ export interface CustomerFormValues {
   cpf_cnpj: string;
   razao_social: string;
   nome_fantasia: string;
-  tipo_contribuinte: "pessoa_fisica" | "pessoa_juridica" | "mei" | "simples_nacional";
+  tipo_contribuinte: "1" | "2" | "9"; // 1=contribuinte, 2=isento, 9=não contribuinte
   ie_rg: string;
   cliente_desde: string;
   endereco: Endereco;

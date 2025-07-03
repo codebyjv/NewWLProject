@@ -28,7 +28,7 @@ export default function CustomerForm({ customer, onSave, onCancel, isSaving }: C
     cpf_cnpj: customer?.cpf_cnpj || "",
     razao_social: customer?.razao_social || "",
     nome_fantasia: customer?.nome_fantasia || "",
-    tipo_contribuinte: customer?.tipo_contribuinte || "pessoa_fisica",
+    tipo_contribuinte: customer?.tipo_contribuinte || "1",
     ie_rg: customer?.ie_rg || "",
     cliente_desde: customer?.cliente_desde || new Date().toISOString().split('T')[0],
     endereco: {
@@ -55,6 +55,8 @@ export default function CustomerForm({ customer, onSave, onCancel, isSaving }: C
           const endereco = est;
 
           const inscricao_estadual = est.inscricoes_estaduais?.find((ie: any) => ie.ativo)?.inscricao_estadual ?? "";
+          const possuiIE = inscricao_estadual !== "";
+          const contribuinte = possuiIE ? "1" : "9"; // se não tiver IE, assume não contribuinte (9)
 
           setFormData((prev) => ({
             ...prev,
@@ -156,6 +158,11 @@ export default function CustomerForm({ customer, onSave, onCancel, isSaving }: C
       isValid = false;
     }
 
+    if (!formData.tipo_contribuinte.trim()) {
+      newErrors.tipo_contribuinte = "Tipo de Contribuinte é obrigatório.";
+      isValid = false;
+    }
+
     if (!formData.razao_social.trim()) {
       newErrors.razao_social = "Razão Social é obrigatória.";
       isValid = false;
@@ -208,17 +215,24 @@ export default function CustomerForm({ customer, onSave, onCancel, isSaving }: C
           
           <div>
             <Label htmlFor="tipo_contribuinte">Tipo de Contribuinte *</Label>
-            <Select value={formData.tipo_contribuinte} onValueChange={(value) => handleInputChange('tipo_contribuinte', value)}>
+            <Select 
+              value={formData.tipo_contribuinte} 
+              onValueChange={(value) => 
+                handleInputChange('tipo_contribuinte', value)
+              }
+            >
               <SelectTrigger>
-                <SelectValue />
+                <SelectValue placeholder="Selecione o tipo de contribuinte" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="pessoa_fisica">Pessoa Física</SelectItem>
-                <SelectItem value="pessoa_juridica">Pessoa Jurídica</SelectItem>
-                <SelectItem value="mei">MEI</SelectItem>
-                <SelectItem value="simples_nacional">Simples Nacional</SelectItem>
+                <SelectItem value="1">Contribuinte ICMS</SelectItem>
+                <SelectItem value="2">Isento de IE</SelectItem>
+                <SelectItem value="9">Não Contribuinte</SelectItem>
               </SelectContent>
             </Select>
+            {errors.tipo_contribuinte && (
+              <p className="text-red-500 text-sm">{errors.tipo_contribuinte}</p>
+            )}
           </div>
           
           <div>

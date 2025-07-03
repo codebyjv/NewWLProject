@@ -1,6 +1,6 @@
 export interface Filters {
   search: string;
-  tipoContribuinte: 'all' | 'pessoa_fisica' | 'pessoa_juridica' | 'mei' | 'simples_nacional';
+  tipoContribuinte: 'all' | '1' | '2' | '9';
   isActive: 'all' | 'true' | 'false';
   status?: string;
   dateRange?: { start: string; end: string };

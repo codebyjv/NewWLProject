@@ -15,10 +15,9 @@ import { useNavigate } from "react-router-dom";
 import { toEditCustomer } from "@/utils/routes";
 
 const tipoContribuinteLabels = {
-  pessoa_fisica: "Pessoa Física",
-  pessoa_juridica: "Pessoa Jurídica",
-  mei: "MEI",
-  simples_nacional: "Simples Nacional"
+  "1": "Contribuinte",
+  "2": "Isento de IE",
+  "9": "Não Contribuinte",
 };
 
 export default function CustomerTable({ customers, isLoading, onSelectCustomer, selectedCustomer, setCustomerToDelete }: CustomerTableProps) {

@@ -38,10 +38,9 @@ export default function CustomerFilters({ filters, onFilterChange }: CustomerFil
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="pessoa_fisica">Pessoa Física</SelectItem>
-                <SelectItem value="pessoa_juridica">Pessoa Jurídica</SelectItem>
-                <SelectItem value="mei">MEI</SelectItem>
-                <SelectItem value="simples_nacional">Simples Nacional</SelectItem>
+                <SelectItem value="1">Contribuinte</SelectItem>
+                <SelectItem value="2">Contribuinte Isente</SelectItem>
+                <SelectItem value="mei">Não Contribuinte</SelectItem>
               </SelectContent>
             </Select>
           </div>
