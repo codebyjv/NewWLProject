@@ -172,11 +172,13 @@ export default function ConfiguracoesFiscais() {
                 </div>
             </section>
 
-            <Button className="w-full bg-red-600 hover:bg-red-700 text-white"
-                variant="default"
-                onClick={handleSave}
-                >Salvar Configurações
-            </Button>
+            <div className="flex justify-end pt-4">
+                <Button className="bg-red-600 hover:bg-red-700 text-white"
+                    variant="default"
+                    onClick={handleSave}
+                    >Salvar Configurações
+                </Button>
+            </div>
         </div>
     </div>
   );
