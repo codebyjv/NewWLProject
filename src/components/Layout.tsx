@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { 
@@ -38,11 +38,13 @@ const navigationItems = [
     url: "/",
     icon: BarChart3,
   },
+
   {
     title: "Estoque",
     url: Routes.estoque,
     icon: Package,
   },
+  
   {
     title: "Pedidos",
     url: Routes.pedidos,
@@ -58,6 +60,7 @@ const navigationItems = [
 export default function Layout({ children, currentPageName }: LayoutProps) {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const [configOpen, setConfigOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -112,21 +115,54 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
                   <SidebarMenu className="space-y-1">
                     {navigationItems.map((item) => (
                       <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton 
-                          asChild 
-                          className={`rounded-lg transition-all duration-200 ${
-                            location.pathname.startsWith(item.url)
-                              ? 'bg-red-50 text-red-700 border border-red-200 shadow-sm' 
-                              : 'hover:bg-gray-50 hover:text-gray-900'
-                          }`}
-                        >
-                          <Link to={item.url} className="flex items-center gap-3 px-3 py-2.5">
+                        <SidebarMenuButton asChild>
+                          <Link
+                            to={item.url}
+                            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
+                              location.pathname === item.url
+                                ? 'bg-red-50 text-red-700 border border-red-200 shadow-sm'
+                                : 'hover:bg-gray-50 hover:text-gray-900'
+                            }`}
+                          >
                             <item.icon className="w-5 h-5" />
                             <span className="font-medium">{item.title}</span>
                           </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     ))}
+
+                    {/* Configurações drop-down AQUI, fora do map */}
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <button
+                          onClick={() => setConfigOpen((prev) => !prev)}
+                          className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-gray-50 hover:text-gray-900"
+                        >
+                          <span className="flex items-center gap-3">
+                            <Package className="w-5 h-5" />
+                            <span className="font-medium">Configurações</span>
+                          </span>
+                          <span className="text-sm">{configOpen ? "▲" : "▼"}</span>
+                        </button>
+                      </SidebarMenuButton>
+
+                      {configOpen && (
+                        <ul className="ml-11 mt-1 space-y-1">
+                          <li>
+                            <Link
+                              to={Routes.configuracoes.fiscais}
+                              className={`block px-2 py-1 rounded-md text-sm ${
+                                location.pathname === Routes.configuracoes.fiscais
+                                  ? "text-red-700 font-medium bg-red-50 border border-red-200 shadow-sm"
+                                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                              }`}
+                            >
+                              Configurações Fiscais
+                            </Link>
+                          </li>
+                        </ul>
+                      )}
+                    </SidebarMenuItem>
                   </SidebarMenu>
                 </SidebarContent>
               </SidebarGroup>
@@ -171,7 +207,7 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <SidebarTrigger className="hover:bg-gray-100 p-2 rounded-lg transition-colors duration-200" />
-                  <h1 className="text-xl font-bold text-gray-900">StockMaster</h1>
+                  <h1 className="text-xl font-bold text-gray-900">WL Pesos Padrão</h1>
                 </div>
               </div>
             </header>

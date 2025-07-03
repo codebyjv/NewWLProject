@@ -1,5 +1,3 @@
-// src/utils/routes.ts
-
 // Rotas fixas
 export const Routes = {
   dashboard: "/",
@@ -7,7 +5,10 @@ export const Routes = {
   estoque: "/Estoque",
   cadastros: "/Cadastros",
   novoCliente: "/Cadastros/NovoCliente",
-  novoPedido: "/Pedidos/NovoPedido"
+  novoPedido: "/Pedidos/NovoPedido",
+  configuracoes: {
+    fiscais: "/configuracoes/fiscais",
+  },
 };
 
 // Helpers de navegação com parâmetros
