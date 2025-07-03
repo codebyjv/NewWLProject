@@ -168,7 +168,6 @@ export default function CustomerForm({ customer, onSave, onCancel, isSaving }: C
       isValid = false;
     }
 
-    // Adicione outras validações conforme necessário
     if (!formData.endereco.cep.trim()) {
       newErrors.endereco = {
         ...newErrors.endereco,

@@ -5,7 +5,7 @@ export const customersMock: Customer[] = [
     id: "1", // Adicionado
     razao_social: "Cliente Exemplo LTDA", // Adicionado
     nome_fantasia: "Cliente Exemplo",
-    tipo_contribuinte: "pessoa_juridica",
+    tipo_contribuinte: "1",
     ie_rg: "123456789",
     cliente_desde: "2023-01-01",
     endereco: {

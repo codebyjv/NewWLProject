@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import { Product } from "@/types/product";
+import { FormProductErrors } from "@/types/product";
 import { ProductFormData, ProductFormProps, MaterialType } from "@/types/product";
 
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ const materialOptions = [
 ];
 
 export default function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
+  const [errors, setErrors] = useState<Partial<FormProductErrors>>({});
   const [formData, setFormData] = useState<ProductFormData>({
     id: product?.id || "",
     name: "",
@@ -27,6 +28,15 @@ export default function ProductForm({ product, onSave, onCancel }: ProductFormPr
     min_stock: 0,
     unit_price: 0,
     is_active: true,
+
+    codigo: "",
+    ncm: "",
+    cfop: "",
+    cest: "",
+    unidade_comercial: "",
+    origem: "0",
+    csosn: "",
+    aliquota_icms: 0,
   });
 
   useEffect(() => {
@@ -41,6 +51,15 @@ export default function ProductForm({ product, onSave, onCancel }: ProductFormPr
         min_stock: product.min_stock || 5,
         unit_price: product.unit_price || 0,
         is_active: product.is_active !== undefined ? product.is_active : true,
+
+        codigo: product.codigo || "",
+        ncm: product.ncm || "",
+        cfop: product.cfop || "",
+        cest: product.cest || "",
+        unidade_comercial: product.unidade_comercial || "",
+        origem: product.origem || "",
+        csosn: product.csosn || "",
+        aliquota_icms: product.aliquota_icms || 0,
       });
     } else {
        setFormData({
@@ -53,6 +72,15 @@ export default function ProductForm({ product, onSave, onCancel }: ProductFormPr
         min_stock: 5,
         unit_price: 0,
         is_active: true,
+
+        codigo: "",
+        ncm: "",
+        cfop: "",
+        cest: "",
+        unidade_comercial: "",
+        origem: "0",
+        csosn: "",
+        aliquota_icms: 0,
       });
     }
   }, [product]);
@@ -98,8 +126,49 @@ export default function ProductForm({ product, onSave, onCancel }: ProductFormPr
     }
   };
 
+  const validateForm = (): boolean => {
+    const newErrors: Partial<FormProductErrors> = {};
+    let isValid = true;
+
+    if (!formData.id.trim()) {
+      newErrors.id = "O campo NCM é obrigatório.";
+      isValid = false;
+    }
+
+    if (!formData.codigo.trim()) {
+      newErrors.codigo = "O campo CFOP é obrigatório.";
+      isValid = false;
+    }
+
+    if (!formData.ncm.trim()) {
+      newErrors.ncm = "O campo NCM é obrigatório.";
+      isValid = false;
+    }
+
+    if (!formData.cfop.trim()) {
+      newErrors.cfop = "O campo CFOP é obrigatório.";
+      isValid = false;
+    }
+
+    if (!formData.unidade_comercial.trim()) {
+      newErrors.unidade_comercial = "O campo CFOP é obrigatório.";
+      isValid = false;
+    }
+
+    if (!formData.csosn.trim()) {
+      newErrors.csosn = "O campo CSOSN é obrigatório.";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validateForm()) return;
+
     const finalData: ProductFormData = {
       ...formData,
       id: String(formData.id),
@@ -107,16 +176,17 @@ export default function ProductForm({ product, onSave, onCancel }: ProductFormPr
       material: formData.material as MaterialType,
       min_stock: Number(formData.min_stock),
       unit_price: formData.unit_price ? Number(formData.unit_price) : undefined,
-      weight_in_grams: parseWeight(formData.weight)
+      weight_in_grams: parseWeight(formData.weight),
     };
-    
+
     if (!finalData.name) {
       const materialLabel = materialOptions.find(opt => opt.value === finalData.material)?.label || '';
       finalData.name = `Peso Padrão ${materialLabel} ${finalData.weight}`;
     }
-    
+
     onSave(finalData);
   };
+
 
   return (
     <Dialog open={true} onOpenChange={onCancel}>
@@ -150,6 +220,20 @@ export default function ProductForm({ product, onSave, onCancel }: ProductFormPr
           <div>
             <Label htmlFor="unit_price">Preço Unitário (R$)</Label>
             <Input id="unit_price" name="unit_price" type="number" step="0.01" value={formData.unit_price} onChange={handleChange} required />
+          </div>
+
+          <div>
+            <Label htmlFor="ncm">NCM *</Label>
+            <Input
+              id="ncm"
+              name="ncm"
+              type="text"
+              value={formData.ncm}
+              onChange={handleChange}
+              placeholder="Ex: 73102990"
+              required
+            />
+            {errors.ncm && <p className="text-red-500 text-sm mt-1">{errors.ncm}</p>}
           </div>
           
           <div>
