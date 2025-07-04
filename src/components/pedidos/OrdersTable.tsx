@@ -37,7 +37,7 @@ const paymentLabels = {
   cartao_debito: "Cartão Débito"
 };
 
-const OrdersTable: React.FC<OrdersTableProps> = ({ orders, isLoading, onSelectOrder, selectedOrder, onDeleteOrder, onEditOrder, onImprimirPedido, onGerarNFe }) => {
+const OrdersTable: React.FC<OrdersTableProps> = ({ orders, isLoading, onSelectOrder, selectedOrder, onDeleteOrder, onEditOrder, onPrintOrder, onGenerateNFe }) => {
   if (isLoading) {
     return (
       <Card>
@@ -138,10 +138,10 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, isLoading, onSelectOr
                             <DropdownMenuItem onClick={() => onEditOrder(order.id)}>
                               ✏️ Editar
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => onGerarNFe(order)}>
+                            <DropdownMenuItem onClick={() => onGenerateNFe(order)}>
                               🧾 Gerar NF-e
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => onImprimirPedido(order.id)}>
+                            <DropdownMenuItem onClick={() => onPrintOrder(order.id)}>
                               🖨️ Imprimir
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => onDeleteOrder(order)} className="text-red-600">
