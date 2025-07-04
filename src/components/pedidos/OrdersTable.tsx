@@ -4,9 +4,15 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { OrdersTableProps } from "@/types/orderProps";
-import { ShoppingCart, Trash2 } from "lucide-react";
+import { ShoppingCart, Trash2, MoreVertical } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 const statusColors = {
   pendente: "bg-amber-100 text-amber-800 border-amber-300",
@@ -31,7 +37,7 @@ const paymentLabels = {
   cartao_debito: "Cartão Débito"
 };
 
-const OrdersTable: React.FC<OrdersTableProps> = ({ orders, isLoading, onSelectOrder, selectedOrder, onDeleteOrder }) => {
+const OrdersTable: React.FC<OrdersTableProps> = ({ orders, isLoading, onSelectOrder, selectedOrder, onDeleteOrder, onEditOrder, onImprimirPedido, onGerarNFe }) => {
   if (isLoading) {
     return (
       <Card>
@@ -122,16 +128,27 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, isLoading, onSelectOr
                     </TableCell>
                     <TableCell>
                       <td className="text-right">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation(); // impede que o clique ative o onClick da linha
-                            onDeleteOrder(order);
-                          }}
-                          className="text-red-600 hover:text-red-800"
-                          title="Excluir pedido"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <button className="p-2 rounded hover:bg-gray-100">
+                              <MoreVertical className="w-5 h-5" />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => onEditOrder(order.id)}>
+                              ✏️ Editar
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => onGerarNFe(order)}>
+                              🧾 Gerar NF-e
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => onImprimirPedido(order.id)}>
+                              🖨️ Imprimir
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => onDeleteOrder(order)} className="text-red-600">
+                              🗑️ Excluir
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </td>
                     </TableCell>
                   </TableRow>

@@ -34,4 +34,7 @@ export interface OrdersTableProps {
   onSelectOrder: (order: Order) => void;
   selectedOrder: Order | null;
   onDeleteOrder: (order: Order) => void;
+  onEditOrder: (id: number) => void;
+  onImprimirPedido: (id: number) => void;
+  onGerarNFe: (pedido: Order) => void;
 }
