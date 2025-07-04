@@ -30,7 +30,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.30.1",
-    "tailwind-merge": "^3.3.1"
+    "tailwind-merge": "^3.3.1",
+    "xmlbuilder2": "^3.1.1"
   },
   "devDependencies": {
     "@types/classnames": "^2.3.0",
