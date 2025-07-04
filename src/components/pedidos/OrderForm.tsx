@@ -70,7 +70,6 @@ export default function OrderForm({ order, products = [], customers = [], onSave
 
   useEffect(() => {
     if (order) {
-      // popula com os dados do pedido existente
       setFormData({
         customer_cpf_cnpj: order.customer_cpf_cnpj || "",
         customer_name: order.customer_name || "",
@@ -80,7 +79,17 @@ export default function OrderForm({ order, products = [], customers = [], onSave
         seller: order.seller || "",
         payment_method: order.payment_method || "pix",
         observations: order.observations || "",
-        items: Array.isArray(order.items) ? order.items : [],
+        items: Array.isArray(order.items)
+          ? order.items.map((item) => {
+              const fiscalItem = item as Partial<OrderItem>;
+              return {
+                ...item,
+                ncm: fiscalItem.ncm ?? "",
+                unidade_comercial: fiscalItem.unidade_comercial ?? "",
+                origem: fiscalItem.origem ?? "0",
+              };
+            })
+          : [],
         subtotal: order.subtotal ?? 0,
         discount_total: order.discount_total ?? 0,
         shipping_cost: order.shipping_cost ?? 0,
@@ -202,6 +211,11 @@ export default function OrderForm({ order, products = [], customers = [], onSave
       unit_price: itemForm.unit_price,
       total_price,
       discount: itemForm.discount || 0,
+
+      // Campos fiscais herdados do produto
+      ncm: product.ncm,
+      unidade_comercial: product.unidade_comercial,
+      origem: product.origem,
     };
 
     setFormData((prev) => ({

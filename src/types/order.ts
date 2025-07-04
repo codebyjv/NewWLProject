@@ -47,6 +47,7 @@ export interface Order {
   status: "pendente" | "processando" | "enviado" | "entregue" | "cancelado";
   observations?: string;
   delete: boolean;
+  cfop_operacao?: string; // usado na geração da NF-e
 }
 
 export interface OrderItem {
@@ -56,6 +57,9 @@ export interface OrderItem {
   unit_price: number;
   total_price: number;
   discount?: number;
+  ncm: string;
+  unidade_comercial: string;
+  origem: "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8";
 }
 
 export interface Installment {
@@ -83,4 +87,5 @@ export interface OrderFormData {
   installments: Installment[];
   total_amount: number;
   delete: boolean;
+  cfop_operacao?: string;
 }
