@@ -37,7 +37,7 @@ import {
   DialogDescription,
   DialogFooter
 } from "@/components/ui/dialog";
-
+import { useNavigate } from "react-router-dom";
 
 import { OrderFilters } from "@/components/pedidos";
 import OrderDetails from "../components/pedidos/OrderDetails.js";
@@ -50,9 +50,16 @@ import { ProductService } from "../services/ProductService";
 import { ordersMock } from "@/entities/order";
 import { customersMock } from "@/entities/customer";
 import { useToast } from "@/components/ui/use-toast";
+import { gerarXMLdaNFe } from "@/utils/nfe/gerarXMLdaNFe";
+
+import { useConfiguracoesFiscais } from "@/hooks/useConfiguracoesFiscais";
 
 export default function Pedidos() {
+  const navigate = useNavigate();
+
   const { addToast } = useToast();
+  const { config: configuracoesFiscais, loading: carregandoConfig } = useConfiguracoesFiscais();
+  
   const [orders, setOrders] = useState<Order[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -159,6 +166,10 @@ export default function Pedidos() {
     );
   };
 
+  const handleEditOrder = (id: number) => {
+    navigate(`/Pedidos/NovoPedido?id=${id}`);
+  };
+
   const handleDeleteOrder = async (orderId: number) => {
     try {
       // Filtra localmente para simular remoção
@@ -174,6 +185,32 @@ export default function Pedidos() {
     }
   };
 
+  const handlePrintOrder = (id: number) => {
+    const printWindow = window.open(`/imprimir-pedido?id=${id}`, "_blank");
+    if (printWindow) {
+      printWindow.focus();
+    }
+  };
+
+  const handleGenerateNFe = (order: Order) => {
+    if (!configuracoesFiscais) {
+      alert("As configurações fiscais ainda não foram carregadas.");
+      return;
+    }
+
+    try {
+      const xml = gerarXMLdaNFe(order, configuracoesFiscais);
+      const blob = new Blob([xml], { type: "application/xml" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `nfe-pedido-${order.id}.xml`;
+      link.click();
+    } catch (error) {
+      console.error("Erro ao gerar NF-e:", error);
+      alert("Ocorreu um erro ao gerar a NF-e. Verifique os dados do pedido.");
+    }
+  };
 
   const exportToCSV = () => {
     const safeOrders = Array.isArray(filteredOrders) ? filteredOrders : [];
@@ -230,6 +267,8 @@ export default function Pedidos() {
 
   const totalRevenue = Array.isArray(filteredOrders) ? filteredOrders.reduce((sum, order) => sum + (order.total_amount || 0), 0) : 0;
   const pendingOrders = Array.isArray(filteredOrders) ? filteredOrders.filter(order => order.status === 'pendente').length : 0;
+
+
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -338,9 +377,12 @@ export default function Pedidos() {
           <OrdersTable
             orders={filteredOrders}
             isLoading={isLoading}
-            onSelectOrder={(order) => setSelectedOrder(order)}
             selectedOrder={selectedOrder}
+            onSelectOrder={(order) => setSelectedOrder(order)}
+            onEditOrder={handleEditOrder}
             onDeleteOrder={(order) => setOrderToDelete(order)}
+            onPrintOrder={handlePrintOrder}
+            onGenerateNFe={handleGenerateNFe}
           />
 
           {/* Modal de Detalhes do Pedido */}

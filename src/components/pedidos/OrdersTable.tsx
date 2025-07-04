@@ -138,10 +138,10 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, isLoading, onSelectOr
                             <DropdownMenuItem onClick={() => onEditOrder(order.id)}>
                               ✏️ Editar
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => onGenerateNFe(order)}>
+                            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onGenerateNFe(order); }}>
                               🧾 Gerar NF-e
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => onPrintOrder(order.id)}>
+                            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onPrintOrder(order.id); }}>
                               🖨️ Imprimir
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => onDeleteOrder(order)} className="text-red-600">
