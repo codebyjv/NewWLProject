@@ -14,6 +14,7 @@ const buttonVariants = cva(
         default: "bg-primary text-white hover:bg-primary/90",
         destructive: "bg-destructive text-white hover:bg-destructive/90",
         outline: "border border-input hover:bg-accent",
+        red: "bg-red-600 text-white hover:bg-red/50",
       },
       size: {
         sm: "h-9 px-3 text-sm",
@@ -35,7 +36,7 @@ interface ButtonProps extends VariantProps<typeof buttonVariants> {
   children: ReactNode;
   className?: string;
   onClick?: () => void;
-  variant?: "default" | "destructive" | "outline";
+  variant?: "default" | "destructive" | "outline" | "red";
   size?: "sm" | "md";
   role?: "combobox";
   type?: "button" | "submit" | "reset";

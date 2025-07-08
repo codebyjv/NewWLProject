@@ -22,28 +22,32 @@ const statusColors = {
 };
 
 export default function CentralNFe() {
-  const [filtroStatus, setFiltroStatus] = useState<string>("");
+  const [filtroStatus, setFiltroStatus] = useState<StatusNFe | "todos">("todos");
   const [notasFiscais, setNotasFiscais] = useState<NotaFiscal[]>([]);
 
-  const notasFiltradas = filtroStatus
-    ? notasFiscais.filter((n: NotaFiscal) => n.status === filtroStatus)
-    : notasFiscais;
+  const notasFiltradas = filtroStatus === "todos"
+    ? notasFiscais
+    : notasFiscais.filter((n) => n.status === filtroStatus);
+
 
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Central de NF-e</h1>
-        <Button variant="outline">+ Nova NF-e</Button>
+        <Button variant="red">+ Nova NF-e</Button>
       </div>
 
       <div className="flex items-center gap-4">
-        <Input placeholder="Buscar por cliente ou CNPJ..." className="max-w-sm" />
-        <Select value={filtroStatus} onValueChange={setFiltroStatus}>
+        <Input
+          placeholder="Buscar por cliente ou CNPJ..."
+          className="max-w-sm"
+        />
+        <Select value={filtroStatus ?? ""} onValueChange={(value) => setFiltroStatus(value as StatusNFe | "todos")}>
           <SelectTrigger className="w-48">
             <SelectValue placeholder="Filtrar por status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Todos</SelectItem>
+            <SelectItem value="todos">Todos</SelectItem>
             <SelectItem value="rascunho">Rascunho</SelectItem>
             <SelectItem value="pronta">Pronta</SelectItem>
             <SelectItem value="autorizada">Autorizada</SelectItem>
@@ -71,7 +75,9 @@ export default function CentralNFe() {
                 <TableCell>{nota.numero_nfe}</TableCell>
                 <TableCell>
                   <p className="font-medium">{nota.customer_name}</p>
-                  <p className="text-sm text-gray-500">{nota.customer_cpf_cnpj}</p>
+                  <p className="text-sm text-gray-500">
+                    {nota.customer_cpf_cnpj}
+                  </p>
                 </TableCell>
                 <TableCell>{nota.sale_date}</TableCell>
                 <TableCell>
@@ -86,10 +92,12 @@ export default function CentralNFe() {
                   </Badge>
                 </TableCell>
                 <TableCell className="flex gap-2">
-                  <span className="text-sm text-gray-400 italic">Inserir ações</span>
+                  <span className="text-sm text-gray-400 italic">
+                    Inserir ações
+                  </span>
                 </TableCell>
               </TableRow>
-          ))}
+            ))}
         </TableBody>
       </Table>
     </div>

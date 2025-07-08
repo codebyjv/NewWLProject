@@ -7,6 +7,7 @@ import {
   Users, 
   BarChart3, 
   Bell,
+  File,
   Menu,
   X
 } from "lucide-react";
@@ -55,6 +56,11 @@ const navigationItems = [
     url: Routes.cadastros,
     icon: Users,
   },
+  {
+    title: "Fiscal",
+    url: Routes.fiscal,
+    icon: File,
+  }
 ];
 
 export default function Layout({ children, currentPageName }: LayoutProps) {

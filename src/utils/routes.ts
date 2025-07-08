@@ -9,6 +9,7 @@ export const Routes = {
   configuracoes: {
     fiscais: "/configuracoes/fiscais",
   },
+  fiscal: "/Fiscal",
 };
 
 // Helpers de navegação com parâmetros
