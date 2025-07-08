@@ -11,6 +11,7 @@ import NovoCliente from "@/pages/NovoCliente";
 import NovoPedido from "@/pages/NovoPedido";
 import ConfiguracoesFiscais from "@/pages/ConfiguracoesFiscais";
 import CentralNFe from "@/pages/CentralNFe";
+import EditarNFe from "@/pages/EditarNFe";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path={Routes.novoCliente} element={<NovoCliente />} />
         <Route path="/novo-cliente" element={<NovoCliente />} />
         <Route path={Routes.fiscal} element={<CentralNFe />} />
+        <Route path="/Fiscal/Editar/:id" element={<EditarNFe />} />
         <Route path={Routes.configuracoes.fiscais} element={<ConfiguracoesFiscais />} />
       </RouterRoutes>
     </Layout>

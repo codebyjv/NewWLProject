@@ -6,6 +6,8 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@
 import { Badge } from "@/components/ui/badge";
 import { Eye, Pencil, Trash2, FileDown } from "lucide-react";
 import { NotaFiscal, StatusNFe } from "@/types/nfe";
+import { useNavigate } from "react-router-dom";
+import { toEditNFe } from "@/utils/routes";
 
 const statusLabels = {
   rascunho: "Rascunho",
@@ -22,6 +24,8 @@ const statusColors = {
 };
 
 export default function CentralNFe() {
+  const navigate = useNavigate();
+
   const [filtroStatus, setFiltroStatus] = useState<StatusNFe | "todos">("todos");
   const [notasFiscais, setNotasFiscais] = useState<NotaFiscal[]>([]);
 
@@ -92,9 +96,9 @@ export default function CentralNFe() {
                   </Badge>
                 </TableCell>
                 <TableCell className="flex gap-2">
-                  <span className="text-sm text-gray-400 italic">
-                    Inserir ações
-                  </span>
+                  <Button size="sm" variant="outline" onClick={() => navigate(toEditNFe(nota.id))}>
+                    <Pencil className="w-4 h-4" />
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}

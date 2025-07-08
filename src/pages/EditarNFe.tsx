@@ -1,11 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { useParams, useNavigate } from "react-router-dom";
+import { useNotasFiscais } from "@/store/useNotasFiscais";
+import { NotaFiscal } from "@/types/nfe";
 
 export default function EditarNFe() {
+  const navigate = useNavigate();
+
+  const { id } = useParams();
+  const { notas } = useNotasFiscais();
+
+  const notaSelecionada = notas.find((n) => n.id === Number(id));
+  const { atualizarNota } = useNotasFiscais();
+
   const [form, setForm] = useState({
     natureza_operacao: "",
     numero_nfe: "",
@@ -48,6 +59,47 @@ export default function EditarNFe() {
     info_fisco: "",
     info_contribuinte: "",
   });
+
+  useEffect(() => {
+  if (notaSelecionada) {
+    setForm({
+      natureza_operacao: "",
+      numero_nfe: notaSelecionada.numero_nfe,
+      serie: "1",
+      data_emissao: notaSelecionada.data_emissao || new Date().toISOString().split("T")[0],
+      tipo_operacao: "saida",
+      finalidade: "normal",
+      modelo: "55",
+      cliente_nome: notaSelecionada.customer_name,
+      cliente_cnpj: notaSelecionada.customer_cpf_cnpj,
+      cliente_ie: "",
+      endereco: "",
+      municipio: "",
+      uf: "",
+      cep: "",
+      pagamento: "pix",
+      condicao_pagamento: "avista",
+      parcelas: [],
+      icms: 0,
+      ipi: 0,
+      pis: 0,
+      cofins: 0,
+      desconto: 0,
+      outras_despesas: 0,
+      valor_total: notaSelecionada.total_amount || 0,
+      transportador: "",
+      placa: "",
+      tipo_frete: "0",
+      volumes: 1,
+      peso_bruto: 0,
+      peso_liquido: 0,
+      observacoes: notaSelecionada.observations || "",
+      info_fisco: "",
+      info_contribuinte: "",
+      produtos: [], // vamos resolver isso no próximo passo
+    });
+  }
+}, [notaSelecionada]);
 
   const handleChange = (field: string, value: any) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -291,7 +343,27 @@ export default function EditarNFe() {
       </section>
 
       <div className="flex justify-end">
-        <Button>Salvar NF-e</Button>
+        <Button
+            onClick={() => {
+                if (!notaSelecionada) return;
+
+                const notaAtualizada: NotaFiscal = {
+                ...notaSelecionada,
+                numero_nfe: form.numero_nfe,
+                data_emissao: form.data_emissao,
+                status: notaSelecionada.status, // ou "pronta" se quiser mudar o status
+                produtos: form.produtos,
+                total_amount: form.valor_total,
+                observations: form.observacoes,
+                // outros campos que quiser atualizar
+                };
+
+                atualizarNota(notaAtualizada);
+                navigate("/Fiscal");
+            }}
+            >
+            Salvar NF-e
+            </Button>
       </div>
     </div>
   );

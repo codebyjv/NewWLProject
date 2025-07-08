@@ -16,3 +16,4 @@ export const Routes = {
 export const toEditCustomer = (id: string) => `${Routes.novoCliente}?id=${id}`;
 export const toEditOrder = (id: string) => `${Routes.novoPedido}?id=${id}`;
 export const toCustomerDetails = (id: string) => `${Routes.cadastros}?selected=${id}`;
+export const toEditNFe = (id: number) => `/Fiscal/Editar/${id}`;
