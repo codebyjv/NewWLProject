@@ -4,13 +4,16 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Eye, Pencil, Trash2, FileDown } from "lucide-react";
+import { Eye, Pencil, Trash2, FileDown, FileText, Send } from "lucide-react";
 import { NotaFiscal, StatusNFe } from "@/types/nfe";
 import { useNavigate } from "react-router-dom";
 import { toEditNFe } from "@/utils/routes";
+import { gerarDanfe, gerarXml, enviarEmailComDanfe } from "@/utils/nfe/actions";
+
 
 const statusLabels = {
   rascunho: "Rascunho",
+  aguardando: "Aguardando",
   pronta: "Pronta",
   autorizada: "Autorizada",
   cancelada: "Cancelada"
@@ -18,6 +21,7 @@ const statusLabels = {
 
 const statusColors = {
   rascunho: "bg-gray-100 text-gray-800 border-gray-300",
+  aguardando: "bg-black-100 text-white border-black-300",
   pronta: "bg-blue-100 text-blue-800 border-blue-300",
   autorizada: "bg-green-100 text-green-800 border-green-300",
   cancelada: "bg-red-100 text-red-800 border-red-300"
@@ -31,13 +35,29 @@ export default function CentralNFe() {
 
   const notasFiltradas = filtroStatus === "todos"
     ? notasFiscais
-    : notasFiscais.filter((n) => n.status === filtroStatus);
+    : notasFiscais.filter((n) => n.status === filtroStatus
+  );
+
+  const verificarStatusNaSefaz = async () => {
+    const atualizadas = notasFiscais.map((nota) => {
+      if (nota.status === "aguardando") {
+        // Simulação: SEFAZ autorizou
+        return { ...nota, status: "autorizada" as StatusNFe};
+      }
+      return nota;
+    });
+
+    setNotasFiscais(atualizadas); // Zustand ou outro state
+  };
 
 
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Central de NF-e</h1>
+        <Button variant="outline" onClick={verificarStatusNaSefaz}>
+          Atualizar
+        </Button>
         <Button variant="red" onClick={() => navigate("/Fiscal/Editar/nova")}>
           + Nova NF-e
         </Button>
@@ -100,6 +120,15 @@ export default function CentralNFe() {
                 <TableCell className="flex gap-2">
                   <Button size="sm" variant="outline" onClick={() => navigate(toEditNFe(nota.id))}>
                     <Pencil className="w-4 h-4" />
+                  </Button>
+                  <Button size="sm" onClick={() => gerarDanfe(nota)}>
+                    <FileDown className="w-4 h-4" />
+                  </Button>
+                  <Button size="sm" onClick={() => gerarXml(nota)}>
+                    <FileText className="w-4 h-4" />
+                  </Button>
+                  <Button size="sm" onClick={() => enviarEmailComDanfe(nota)}>
+                    <Send className="w-4 h-4" />
                   </Button>
                 </TableCell>
               </TableRow>

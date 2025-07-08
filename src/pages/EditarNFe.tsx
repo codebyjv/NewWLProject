@@ -17,7 +17,7 @@ export default function EditarNFe() {
   const isNova = id === "nova";
 
   const notaSelecionada = notas.find((n) => n.id === Number(id));
-  const { atualizarNota } = useNotasFiscais();
+  const { adicionarNota, atualizarNota } = useNotasFiscais();
 
   const [form, setForm] = useState({
     natureza_operacao: "",
@@ -455,15 +455,55 @@ export default function EditarNFe() {
         </div>
         </section>
 
-      {/* 4. Observações */}
+      {/* 7. Observações */}
       <section className="space-y-4">
         <h2 className="text-lg font-semibold">📝 Observações</h2>
         <Textarea placeholder="Informações ao fisco" value={form.info_fisco} onChange={(e) => handleChange("info_fisco", e.target.value)} />
         <Textarea placeholder="Informações ao contribuinte" value={form.info_contribuinte} onChange={(e) => handleChange("info_contribuinte", e.target.value)} />
       </section>
 
-      <div className="flex justify-end">
+      {/* 8. Botões */}
+      <div className="flex justify-end mt-8 gap-4">
         <Button
+            variant="outline"
+            onClick={() => navigate("/Fiscal")}
+        >
+            Voltar
+        </Button>
+
+        <Button
+            variant="outline"
+            onClick={() => {
+            const novaNota: NotaFiscal = {
+                ...notaSelecionada,
+                ...form,
+                id: notaSelecionada?.id || Date.now(), // ou use uuid
+                status: "aguardando",
+                customer_name: form.cliente_nome,
+                customer_cpf_cnpj: form.cliente_cnpj,
+                total_amount: form.valor_total,
+                observations: form.observacoes,
+                created_date: notaSelecionada?.created_date || new Date().toISOString(), // obrigatório
+                sale_date: notaSelecionada?.sale_date || new Date().toISOString(), // obrigatório
+                seller: notaSelecionada?.seller || "João", // obrigatório
+                payment_method: notaSelecionada?.payment_method || "boleto_bancario", // obrigatório
+                delete: notaSelecionada?.delete || false, // obrigatório
+            };
+
+            if (isNova) {
+                adicionarNota(novaNota); // função do Zustand
+            } else {
+                atualizarNota(novaNota);
+            }
+
+            navigate("/Fiscal");
+            }}
+        >
+            Salvar Rascunho
+        </Button>
+        
+        <Button
+            variant="red"
             onClick={() => {
                 if (!notaSelecionada) return;
 

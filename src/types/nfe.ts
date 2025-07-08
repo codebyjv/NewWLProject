@@ -1,6 +1,6 @@
 import { Order } from "./order";
 
-export type StatusNFe = "rascunho" | "pronta" | "autorizada" | "cancelada";
+export type StatusNFe = "rascunho" | "aguardando" | "pronta" | "autorizada" | "cancelada";
 
 export interface ProdutoNFe {
   descricao: string;
@@ -25,4 +25,5 @@ export interface NotaFiscal extends Omit<Order, "status"> {
   protocolo?: string;
   data_emissao?: string;
   data_saida?: string;
+  total_amount: number;
 }
