@@ -10,7 +10,6 @@ import { useNavigate } from "react-router-dom";
 import { toEditNFe } from "@/utils/routes";
 import { gerarDanfe, gerarXml, enviarEmailComDanfe } from "@/utils/nfe/actions";
 
-import { mockNotaFiscal } from "@/entities/notaFiscal";
 import { useNotasFiscais } from "@/store/useNotasFiscais";
 
 const statusLabels = {
@@ -32,30 +31,21 @@ const statusColors = {
 export default function CentralNFe() {
   const navigate = useNavigate();
 
-  const { injetarMock } = useNotasFiscais();
-  const { adicionarNota } = useNotasFiscais();
-  const { atualizarNota } = useNotasFiscais();
+  const { notas, injetarMock, atualizarNota } = useNotasFiscais();
 
   const [filtroStatus, setFiltroStatus] = useState<StatusNFe | "todos">("todos");
-  const [notasFiscais, setNotasFiscais] = useState<NotaFiscal[]>([]);
 
   const notasFiltradas = filtroStatus === "todos"
-    ? notasFiscais
-    : notasFiscais.filter((n) => n.status === filtroStatus
-  );
+  ? notas
+  : notas.filter((n) => n.status === filtroStatus);
 
-  const verificarStatusNaSefaz = async () => {
-    const atualizadas = notasFiscais.map((nota) => {
+  const verificarStatusNaSefaz = () => {
+    notas.forEach((nota) => {
       if (nota.status === "aguardando") {
-        // Simulação: SEFAZ autorizou
-        return { ...nota, status: "autorizada" as StatusNFe};
+        atualizarNota({ ...nota, status: "autorizada" });
       }
-      return nota;
     });
-
-    setNotasFiscais(atualizadas); // Zustand ou outro state
   };
-
 
   return (
     <div className="p-6 space-y-6">
@@ -105,9 +95,7 @@ export default function CentralNFe() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {notasFiscais
-            .filter((n) => !filtroStatus || n.status === filtroStatus)
-            .map((nota) => (
+          {notasFiltradas.map((nota) => (
               <TableRow key={nota.id}>
                 <TableCell>{nota.numero_nfe}</TableCell>
                 <TableCell>

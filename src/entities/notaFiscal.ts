@@ -1,32 +1,26 @@
 import { NotaFiscal } from "@/types/nfe";
 
 export const mockNotaFiscal: NotaFiscal = {
-  id: 1,
-  numero_nfe: "123456789",
+  id: 999,
+  numero_nfe: "000999",
   status: "autorizada",
-  customer_name: "Empresa Exemplo LTDA",
-  customer_cpf_cnpj: "12.345.678/0001-99",
-  total_amount: 1500.75,
+  customer_name: "Cliente Mock",
+  customer_cpf_cnpj: "00.000.000/0001-00",
+  total_amount: 1234.56,
   created_date: new Date().toISOString(),
   data_emissao: new Date().toISOString().split("T")[0],
+  data_saida: new Date().toISOString().split("T")[0],
+  sale_date: new Date().toISOString().split("T")[0],
+  seller: "Vendedor Exemplo",
+  payment_method: "pix",
+  delete: false,
   produtos: [
     {
-      descricao: "Produto A",
+      descricao: "Produto Exemplo",
       ncm: "12345678",
       cfop: "5102",
       quantidade: 2,
       valor_unitario: 500,
     },
-    {
-      descricao: "Produto B",
-      ncm: "87654321",
-      cfop: "5102",
-      quantidade: 1,
-      valor_unitario: 500.75,
-    },
   ],
-  sale_date: new Date().toISOString().split("T")[0],
-  seller: "João Vitor",
-  payment_method: "boleto_bancario",
-  delete: false,
 };

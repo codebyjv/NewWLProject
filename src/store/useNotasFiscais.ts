@@ -24,6 +24,13 @@ export const useNotasFiscais = create<NotasFiscaisStore>((set) => ({
   })),
   injetarMock: () =>
   set((state) => ({
-    notas: [...state.notas, mockNotaFiscal],
+    notas: [
+      ...state.notas,
+      {
+        ...mockNotaFiscal,
+        id: Date.now(), // ✅ ID único
+        numero_nfe: String(Date.now()).slice(-6), // opcional: número diferente
+      },
+    ],
   })),
 }));
