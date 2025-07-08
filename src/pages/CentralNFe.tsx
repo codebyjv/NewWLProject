@@ -10,6 +10,8 @@ import { useNavigate } from "react-router-dom";
 import { toEditNFe } from "@/utils/routes";
 import { gerarDanfe, gerarXml, enviarEmailComDanfe } from "@/utils/nfe/actions";
 
+import { mockNotaFiscal } from "@/entities/notaFiscal";
+import { useNotasFiscais } from "@/store/useNotasFiscais";
 
 const statusLabels = {
   rascunho: "Rascunho",
@@ -29,6 +31,10 @@ const statusColors = {
 
 export default function CentralNFe() {
   const navigate = useNavigate();
+
+  const { injetarMock } = useNotasFiscais();
+  const { adicionarNota } = useNotasFiscais();
+  const { atualizarNota } = useNotasFiscais();
 
   const [filtroStatus, setFiltroStatus] = useState<StatusNFe | "todos">("todos");
   const [notasFiscais, setNotasFiscais] = useState<NotaFiscal[]>([]);
@@ -55,18 +61,23 @@ export default function CentralNFe() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Central de NF-e</h1>
-        <Button variant="outline" onClick={verificarStatusNaSefaz}>
-          Atualizar
-        </Button>
-        <Button variant="red" onClick={() => navigate("/Fiscal/Editar/nova")}>
-          + Nova NF-e
-        </Button>
+          <div className="flex justify-end gap-4">
+            <Button variant="outline" onClick={verificarStatusNaSefaz}>
+              Atualizar
+            </Button>
+            <Button variant="red" onClick={() => navigate("/Fiscal/Editar/nova")}>
+              + Nova NF-e
+            </Button>
+            <Button variant="outline" onClick={injetarMock}>
+              Injetar NF-e Mock
+            </Button>
+          </div>
       </div>
 
       <div className="flex items-center gap-4">
         <Input
           placeholder="Buscar por cliente ou CNPJ..."
-          className="max-w-sm"
+          className="max-w-sm bg-white"
         />
         <Select value={filtroStatus ?? ""} onValueChange={(value) => setFiltroStatus(value as StatusNFe | "todos")}>
           <SelectTrigger className="w-48">
