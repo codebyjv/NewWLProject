@@ -38,7 +38,9 @@ export default function CentralNFe() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Central de NF-e</h1>
-        <Button variant="red">+ Nova NF-e</Button>
+        <Button variant="red" onClick={() => navigate("/Fiscal/Editar/nova")}>
+          + Nova NF-e
+        </Button>
       </div>
 
       <div className="flex items-center gap-4">

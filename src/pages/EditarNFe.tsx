@@ -6,13 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useParams, useNavigate } from "react-router-dom";
 import { useNotasFiscais } from "@/store/useNotasFiscais";
-import { NotaFiscal } from "@/types/nfe";
+import { NotaFiscal, Parcela } from "@/types/nfe";
 
 export default function EditarNFe() {
   const navigate = useNavigate();
 
   const { id } = useParams();
   const { notas } = useNotasFiscais();
+
+  const isNova = id === "nova";
 
   const notaSelecionada = notas.find((n) => n.id === Number(id));
   const { atualizarNota } = useNotasFiscais();
@@ -22,6 +24,7 @@ export default function EditarNFe() {
     numero_nfe: "",
     serie: "1",
     data_emissao: new Date().toISOString().split("T")[0],
+    data_saida: new Date().toISOString().split("T")[0],
     tipo_operacao: "saida",
     finalidade: "normal",
     modelo: "55",
@@ -34,7 +37,11 @@ export default function EditarNFe() {
     cep: "",
     pagamento: "pix",
     condicao_pagamento: "avista",
-    parcelas: [],
+    parcelas: [] as {
+        number: number;
+        value: number;
+        due_date: string;
+    }[],
     produtos: [] as {
         descricao: string;
         ncm: string;
@@ -61,45 +68,108 @@ export default function EditarNFe() {
   });
 
   useEffect(() => {
-  if (notaSelecionada) {
-    setForm({
-      natureza_operacao: "",
-      numero_nfe: notaSelecionada.numero_nfe,
-      serie: "1",
-      data_emissao: notaSelecionada.data_emissao || new Date().toISOString().split("T")[0],
-      tipo_operacao: "saida",
-      finalidade: "normal",
-      modelo: "55",
-      cliente_nome: notaSelecionada.customer_name,
-      cliente_cnpj: notaSelecionada.customer_cpf_cnpj,
-      cliente_ie: "",
-      endereco: "",
-      municipio: "",
-      uf: "",
-      cep: "",
-      pagamento: "pix",
-      condicao_pagamento: "avista",
-      parcelas: [],
-      icms: 0,
-      ipi: 0,
-      pis: 0,
-      cofins: 0,
-      desconto: 0,
-      outras_despesas: 0,
-      valor_total: notaSelecionada.total_amount || 0,
-      transportador: "",
-      placa: "",
-      tipo_frete: "0",
-      volumes: 1,
-      peso_bruto: 0,
-      peso_liquido: 0,
-      observacoes: notaSelecionada.observations || "",
-      info_fisco: "",
-      info_contribuinte: "",
-      produtos: [], // vamos resolver isso no próximo passo
-    });
-  }
-}, [notaSelecionada]);
+    if (notaSelecionada) {
+        setForm({
+        natureza_operacao: "",
+        numero_nfe: notaSelecionada.numero_nfe,
+        serie: "1",
+        data_emissao: notaSelecionada.data_emissao || new Date().toISOString().split("T")[0],
+        data_saida: notaSelecionada.data_saida || new Date().toISOString().split("T")[0],
+        tipo_operacao: "saida",
+        finalidade: "normal",
+        modelo: "55",
+        cliente_nome: notaSelecionada.customer_name,
+        cliente_cnpj: notaSelecionada.customer_cpf_cnpj,
+        cliente_ie: "",
+        endereco: "",
+        municipio: "",
+        uf: "",
+        cep: "",
+        pagamento: "pix",
+        condicao_pagamento: "avista",
+        parcelas: [],
+        icms: 0,
+        ipi: 0,
+        pis: 0,
+        cofins: 0,
+        desconto: 0,
+        outras_despesas: 0,
+        valor_total: notaSelecionada.total_amount || 0,
+        transportador: "",
+        placa: "",
+        tipo_frete: "0",
+        volumes: 1,
+        peso_bruto: 0,
+        peso_liquido: 0,
+        observacoes: notaSelecionada.observations || "",
+        info_fisco: "",
+        info_contribuinte: "",
+        produtos: [],
+        });
+    }
+    }, [notaSelecionada]);
+
+  useEffect(() => {
+    if (isNova) {
+        setForm({
+        natureza_operacao: "",
+        numero_nfe: "",
+        serie: "1",
+        data_emissao: new Date().toISOString().split("T")[0],
+        data_saida: new Date().toISOString().split("T")[0],
+        tipo_operacao: "saida",
+        finalidade: "normal",
+        modelo: "55",
+        cliente_nome: "",
+        cliente_cnpj: "",
+        cliente_ie: "",
+        endereco: "",
+        municipio: "",
+        uf: "",
+        cep: "",
+        pagamento: "pix",
+        condicao_pagamento: "avista",
+        parcelas: [],
+        icms: 0,
+        ipi: 0,
+        pis: 0,
+        cofins: 0,
+        desconto: 0,
+        outras_despesas: 0,
+        valor_total: 0,
+        transportador: "",
+        placa: "",
+        tipo_frete: "0",
+        volumes: 1,
+        peso_bruto: 0,
+        peso_liquido: 0,
+        observacoes: "",
+        info_fisco: "",
+        info_contribuinte: "",
+        produtos: [],
+        });
+    }
+    }, [isNova]);
+
+  useEffect(() => {
+    const totalProdutos = form.produtos.reduce(
+        (acc, p) => acc + p.quantidade * p.valor_unitario,
+        0
+    );
+
+    const aliquotaICMS = 0.18; // Exemplo: 18%
+    const aliquotaPIS = 0.0065;
+    const aliquotaCOFINS = 0.03;
+
+    const icms = totalProdutos * aliquotaICMS;
+    const pis = totalProdutos * aliquotaPIS;
+    const cofins = totalProdutos * aliquotaCOFINS;
+
+    handleChange("icms", icms);
+    handleChange("pis", pis);
+    handleChange("cofins", cofins);
+    handleChange("valor_total", totalProdutos + form.outras_despesas - form.desconto);
+    }, [form.produtos, form.outras_despesas, form.desconto]);
 
   const handleChange = (field: string, value: any) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -116,7 +186,8 @@ export default function EditarNFe() {
           <Input placeholder="Natureza da operação" value={form.natureza_operacao} onChange={(e) => handleChange("natureza_operacao", e.target.value)} />
           <Input placeholder="Número da NF-e" value={form.numero_nfe} onChange={(e) => handleChange("numero_nfe", e.target.value)} />
           <Input placeholder="Série" value={form.serie} onChange={(e) => handleChange("serie", e.target.value)} />
-          <Input type="date" value={form.data_emissao} onChange={(e) => handleChange("data_emissao", e.target.value)} />
+          <Input type="date" value={form.data_emissao} onChange={(e) => handleChange("data_emissao", e.target.value)} placeholder="Data de emissão" />
+          <Input type="date" value={form.data_saida} onChange={(e) => handleChange("data_saida", e.target.value)} placeholder="Data de saída" />
         </div>
       </section>
 
@@ -153,6 +224,55 @@ export default function EditarNFe() {
               <SelectItem value="prazo">A prazo</SelectItem>
             </SelectContent>
           </Select>
+          {form.pagamento === "boleto" || form.pagamento === "cartao" ? (
+            <div className="space-y-2">
+                <h3 className="text-sm font-medium">Parcelas</h3>
+                {form.parcelas.map((parcela, index) => (
+                <div key={index} className="grid grid-cols-3 gap-2 items-center">
+                    <Input
+                    type="number"
+                    placeholder="Valor"
+                    value={parcela.value}
+                    onChange={(e) => {
+                        const novas = [...form.parcelas];
+                        novas[index].value = Number(e.target.value);
+                        handleChange("parcelas", novas);
+                    }}
+                    />
+                    <Input
+                    type="date"
+                    placeholder="Vencimento"
+                    value={parcela.due_date}
+                    onChange={(e) => {
+                        const novas = [...form.parcelas];
+                        novas[index].due_date = e.target.value;
+                        handleChange("parcelas", novas);
+                    }}
+                    />
+                    <Button
+                    variant="outline"
+                    onClick={() => {
+                        const novas = form.parcelas.filter((_, i) => i !== index);
+                        handleChange("parcelas", novas);
+                    }}
+                    >
+                    Remover
+                    </Button>
+                </div>
+                ))}
+                <Button
+                variant="outline"
+                onClick={() =>
+                    handleChange("parcelas", [
+                    ...form.parcelas,
+                    { number: form.parcelas.length + 1, value: 0, due_date: "" },
+                    ])
+                }
+                >
+                + Adicionar Parcela
+                </Button>
+            </div>
+            ) : null}
         </div>
       </section>
 
