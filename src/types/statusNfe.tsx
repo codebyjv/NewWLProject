@@ -1,1 +1,0 @@
-export type StatusNFe = "rascunho" | "pronta" | "autorizada" | "cancelada";

@@ -53,10 +53,13 @@ import { useToast } from "@/components/ui/use-toast";
 import { gerarXMLdaNFe } from "@/utils/nfe/gerarXMLdaNFe";
 
 import { useConfiguracoesFiscais } from "@/hooks/useConfiguracoesFiscais";
+import { NotaFiscal } from "@/types/nfe.js";
+import { useNotasFiscais } from "@/store/useNotasFiscais";
 
 export default function Pedidos() {
   const navigate = useNavigate();
 
+  const { adicionarNota } = useNotasFiscais();
   const { addToast } = useToast();
   const { config: configuracoesFiscais, loading: carregandoConfig } = useConfiguracoesFiscais();
   
@@ -193,23 +196,14 @@ export default function Pedidos() {
   };
 
   const handleGenerateNFe = (order: Order) => {
-    if (!configuracoesFiscais) {
-      alert("As configurações fiscais ainda não foram carregadas.");
-      return;
-    }
+    const novaNfe: NotaFiscal = {
+      ...order,
+      numero_nfe: String(Math.floor(Math.random() * 1000000)).padStart(6, "0"),
+      status: "rascunho",
+    };
 
-    try {
-      const xml = gerarXMLdaNFe(order, configuracoesFiscais);
-      const blob = new Blob([xml], { type: "application/xml" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `nfe-pedido-${order.id}.xml`;
-      link.click();
-    } catch (error) {
-      console.error("Erro ao gerar NF-e:", error);
-      alert("Ocorreu um erro ao gerar a NF-e. Verifique os dados do pedido.");
-    }
+    adicionarNota(novaNfe);
+    navigate("/central-nfe");
   };
 
   const exportToCSV = () => {

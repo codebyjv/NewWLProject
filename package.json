@@ -33,7 +33,8 @@
     "react-dropdown-menu": "^0.0.2",
     "react-router-dom": "^6.30.1",
     "tailwind-merge": "^3.3.1",
-    "xmlbuilder2": "^3.1.1"
+    "xmlbuilder2": "^3.1.1",
+    "zustand": "^5.0.6"
   },
   "devDependencies": {
     "@types/classnames": "^2.3.0",

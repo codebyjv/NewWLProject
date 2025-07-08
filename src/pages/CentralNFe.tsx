@@ -5,7 +5,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Eye, Pencil, Trash2, FileDown } from "lucide-react";
-import { StatusNFe } from "@/types/statusNfe";
+import { NotaFiscal, StatusNFe } from "@/types/nfe";
 
 const statusLabels = {
   rascunho: "Rascunho",
@@ -23,20 +23,11 @@ const statusColors = {
 
 export default function CentralNFe() {
   const [filtroStatus, setFiltroStatus] = useState<string>("");
-
-  const notas: {
-    id: number,
-    numero: string,
-    cliente: string,
-    cnpj: string,
-    data: string,
-    valor: number,
-    status: StatusNFe;
-  } [] = [/* ... */];
+  const [notasFiscais, setNotasFiscais] = useState<NotaFiscal[]>([]);
 
   const notasFiltradas = filtroStatus
-    ? notas.filter((n) => n.status === filtroStatus)
-    : notas;
+    ? notasFiscais.filter((n: NotaFiscal) => n.status === filtroStatus)
+    : notasFiscais;
 
   return (
     <div className="p-6 space-y-6">
@@ -73,40 +64,31 @@ export default function CentralNFe() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {notasFiltradas.map((nota) => (
-            <TableRow key={nota.id}>
-              <TableCell>{nota.numero}</TableCell>
-              <TableCell>
-                <p className="font-medium">{nota.cliente}</p>
-                <p className="text-sm text-gray-500">{nota.cnpj}</p>
-              </TableCell>
-              <TableCell>{nota.data}</TableCell>
-              <TableCell>
-                {new Intl.NumberFormat("pt-BR", {
-                  style: "currency",
-                  currency: "BRL",
-                }).format(nota.valor)}
-              </TableCell>
-              <TableCell>
-                <Badge className={statusColors[nota.status]}>
-                  {statusLabels[nota.status]}
-                </Badge>
-              </TableCell>
-              <TableCell className="flex gap-2">
-                <Button size="sm" variant="default">
-                  <Eye className="w-4 h-4" />
-                </Button>
-                <Button size="sm" variant="default">
-                  <Pencil className="w-4 h-4" />
-                </Button>
-                <Button size="sm" variant="default">
-                  <FileDown className="w-4 h-4" />
-                </Button>
-                <Button size="sm" variant="default" className="text-red-600">
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </TableCell>
-            </TableRow>
+          {notasFiscais
+            .filter((n) => !filtroStatus || n.status === filtroStatus)
+            .map((nota) => (
+              <TableRow key={nota.id}>
+                <TableCell>{nota.numero_nfe}</TableCell>
+                <TableCell>
+                  <p className="font-medium">{nota.customer_name}</p>
+                  <p className="text-sm text-gray-500">{nota.customer_cpf_cnpj}</p>
+                </TableCell>
+                <TableCell>{nota.sale_date}</TableCell>
+                <TableCell>
+                  {new Intl.NumberFormat("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  }).format(nota.total_amount || 0)}
+                </TableCell>
+                <TableCell>
+                  <Badge className={statusColors[nota.status]}>
+                    {statusLabels[nota.status]}
+                  </Badge>
+                </TableCell>
+                <TableCell className="flex gap-2">
+                  <span className="text-sm text-gray-400 italic">Inserir ações</span>
+                </TableCell>
+              </TableRow>
           ))}
         </TableBody>
       </Table>
