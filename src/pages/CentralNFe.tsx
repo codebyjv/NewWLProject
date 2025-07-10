@@ -4,11 +4,18 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Eye, Pencil, Trash2, FileDown, FileText, Send } from "lucide-react";
+import { Eye, Pencil, Trash2, FileDown, FileText, Send, MoreVertical } from "lucide-react";
 import { NotaFiscal, StatusNFe } from "@/types/nfe";
 import { useNavigate } from "react-router-dom";
 import { toEditNFe } from "@/utils/routes";
 import { gerarDanfe, gerarXml, enviarEmailComDanfe } from "@/utils/nfe/actions";
+
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 import { useNotasFiscais } from "@/store/useNotasFiscais";
 
@@ -48,10 +55,15 @@ export default function CentralNFe() {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Central de NF-e</h1>
-          <div className="flex justify-end gap-4">
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Central de NF-e</h1>
+            <p className="text-gray-600 mt-1">Gerencie todas as NF-e do sistema.</p>
+          </div>
+          <div className="flex gap-3 w-full lg:w-auto">
             <Button variant="outline" onClick={verificarStatusNaSefaz}>
               Atualizar
             </Button>
@@ -62,78 +74,90 @@ export default function CentralNFe() {
               Injetar NF-e Mock
             </Button>
           </div>
-      </div>
+        </div>
 
-      <div className="flex items-center gap-4">
-        <Input
-          placeholder="Buscar por cliente ou CNPJ..."
-          className="max-w-sm bg-white"
-        />
-        <Select value={filtroStatus ?? ""} onValueChange={(value) => setFiltroStatus(value as StatusNFe | "todos")}>
-          <SelectTrigger className="w-48">
-            <SelectValue placeholder="Filtrar por status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="todos">Todos</SelectItem>
-            <SelectItem value="rascunho">Rascunho</SelectItem>
-            <SelectItem value="pronta">Pronta</SelectItem>
-            <SelectItem value="autorizada">Autorizada</SelectItem>
-            <SelectItem value="cancelada">Cancelada</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+        <div className="flex items-center gap-4">
+          <Input
+            placeholder="Buscar por cliente ou CNPJ..."
+            className="max-w-sm bg-white"
+          />
+          <Select value={filtroStatus ?? ""} onValueChange={(value) => setFiltroStatus(value as StatusNFe | "todos")}>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Filtrar por status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todos</SelectItem>
+              <SelectItem value="rascunho">Rascunho</SelectItem>
+                <SelectItem value="pronta">Pronta</SelectItem>
+              <SelectItem value="autorizada">Autorizada</SelectItem>
+              <SelectItem value="cancelada">Cancelada</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Número</TableHead>
-            <TableHead>Cliente</TableHead>
-            <TableHead>Data</TableHead>
-            <TableHead>Valor</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Ações</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {notasFiltradas.map((nota) => (
-              <TableRow key={nota.id}>
-                <TableCell>{nota.numero_nfe}</TableCell>
-                <TableCell>
-                  <p className="font-medium">{nota.customer_name}</p>
-                  <p className="text-sm text-gray-500">
-                    {nota.customer_cpf_cnpj}
-                  </p>
-                </TableCell>
-                <TableCell>{nota.sale_date}</TableCell>
-                <TableCell>
-                  {new Intl.NumberFormat("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  }).format(nota.total_amount || 0)}
-                </TableCell>
-                <TableCell>
-                  <Badge className={statusColors[nota.status]}>
-                    {statusLabels[nota.status]}
-                  </Badge>
-                </TableCell>
-                <TableCell className="flex gap-2">
-                  <Button size="sm" variant="outline" onClick={() => navigate(toEditNFe(nota.id))}>
-                    <Pencil className="w-4 h-4" />
-                  </Button>
-                  <Button size="sm" onClick={() => gerarDanfe(nota)}>
-                    <FileDown className="w-4 h-4" />
-                  </Button>
-                  <Button size="sm" onClick={() => gerarXml(nota)}>
-                    <FileText className="w-4 h-4" />
-                  </Button>
-                  <Button size="sm" onClick={() => enviarEmailComDanfe(nota)}>
-                    <Send className="w-4 h-4" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-        </TableBody>
-      </Table>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Número</TableHead>
+              <TableHead>Cliente</TableHead>
+              <TableHead>Data</TableHead>
+              <TableHead>Valor</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Ações</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {notasFiltradas.map((nota) => (
+                <TableRow key={nota.id}>
+                  <TableCell>{nota.numero_nfe}</TableCell>
+                  <TableCell>
+                    <p className="font-medium">{nota.customer_name}</p>
+                    <p className="text-sm text-gray-500">
+                      {nota.customer_cpf_cnpj}
+                    </p>
+                  </TableCell>
+                  <TableCell>{nota.sale_date}</TableCell>
+                  <TableCell>
+                    {new Intl.NumberFormat("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    }).format(nota.total_amount || 0)}
+                  </TableCell>
+                  <TableCell>
+                    <Badge className={statusColors[nota.status]}>
+                      {statusLabels[nota.status]}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <td className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button className="p-2 rounded hover:bg-gray-100">
+                            <MoreVertical className="w-5 h-5"/>
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => navigate(toEditNFe(nota.id))}>
+                            ✏️ Editar
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => gerarDanfe(nota)}>
+                            🧾 Gerar DANFE
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => gerarXml(nota)}>
+                            📁 Gerar XML
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => enviarEmailComDanfe(nota)}>
+                            📨  Enviar E-mail
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </td>
+                  </TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }
