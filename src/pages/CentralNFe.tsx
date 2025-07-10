@@ -140,7 +140,12 @@ export default function CentralNFe() {
                           <DropdownMenuItem onClick={() => navigate(toEditNFe(nota.id))}>
                             ✏️ Editar
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => gerarDanfe(nota)}>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              console.log("Nota enviada para gerarDanfe:", nota);
+                              gerarDanfe(nota);
+                            }}
+                          >
                             🧾 Gerar DANFE
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => gerarXml(nota)}>

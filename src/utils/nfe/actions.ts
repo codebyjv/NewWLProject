@@ -1,40 +1,27 @@
-import { NotaFiscal, StatusNFe } from "@/types/nfe";
-
 import { jsPDF } from "jspdf";
 
-import html2pdf from "html2pdf.js";
+import html2canvas from "html2canvas";
 
-export const gerarDanfe = (nota: NotaFiscal) => {
+import { NotaFiscal, StatusNFe } from "@/types/nfe";
+
+export const gerarDanfe = async (nota: NotaFiscal) => {
   const isFiscal = nota.status === "autorizada";
 
-  // CSS da DANFE
   const css = `
     .danfe-container {
       font-family: Arial, sans-serif;
       width: 800px;
-      margin: 0 auto;
+      margin: 40px auto;
       padding: 20px;
       background: #fff;
       border: 1px solid #000;
-    }
-
-    .danfe-header h2 {
-      text-align: center;
-      margin-bottom: 10px;
-    }
-
-    .danfe-info,
-    .danfe-emissor,
-    .danfe-destinatario,
-    .danfe-produtos,
-    .danfe-totais,
-    .danfe-footer {
-      margin-top: 20px;
+      position: relative;
     }
 
     .danfe-produtos table {
       width: 100%;
       border-collapse: collapse;
+      margin-top: 10px;
     }
 
     .danfe-produtos th,
@@ -42,120 +29,123 @@ export const gerarDanfe = (nota: NotaFiscal) => {
       border: 1px solid #333;
       padding: 6px;
       text-align: left;
-    }
-
-    .danfe-footer {
-      margin-top: 30px;
-      text-align: center;
       font-size: 12px;
     }
 
-    .nao-fiscal {
-      color: red;
-      font-weight: bold;
-      font-size: 14px;
-      margin-top: 10px;
-      text-align: center;
+    .marca-dagua {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-45deg);
+      font-size: 40px;
+      color: rgba(255, 0, 0, 0.2);
+      white-space: nowrap;
+      z-index: 1;
+      pointer-events: none;
     }
-    `;
 
-  // HTML da DANFE
+    .conteudo {
+      position: relative;
+      z-index: 2;
+    }
+  `;
+
   const html = `
-    <style>${css}</style>
-    <div class="danfe-container">
-      <div class="danfe-header">
-        <h2>DANFE - Documento Auxiliar da Nota Fiscal Eletrônica</h2>
-      </div>
-
-      <div class="danfe-info">
-        <p><strong>Número NF-e:</strong> ${nota.numero_nfe}</p>
-        <p><strong>Data de Emissão:</strong> ${nota.data_emissao}</p>
-        <p><strong>Status:</strong> ${nota.status}</p>
-      </div>
-
-      <div class="danfe-emissor">
-        <h3>Emitente</h3>
-        <p><strong>Nome:</strong> WL COMERCIO E CALIBRACAO EM PESOS PADRAO LTDA</p>
-        <p><strong>CNPJ:</strong> 00.000.000/0001-00</p>
-        <p><strong>Endereço:</strong> Rua Exemplo, 123 - São Paulo/SP</p>
-      </div>
-
-      <div class="danfe-destinatario">
-        <h3>Destinatário</h3>
-        <p><strong>Nome:</strong> ${nota.customer_name}</p>
-        <p><strong>CNPJ:</strong> ${nota.customer_cpf_cnpj}</p>
-      </div>
-
-      <div class="danfe-produtos">
-        <h3>Produtos/Serviços</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Descrição</th>
-              <th>CFOP</th>
-              <th>NCM</th>
-              <th>Quantidade</th>
-              <th>Valor Unitário</th>
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${nota.produtos
-              ?.map(
-                (p) => `
-              <tr>
-                <td>${p.descricao}</td>
-                <td>${p.cfop}</td>
-                <td>${p.ncm}</td>
-                <td>${p.quantidade}</td>
-                <td>R$ ${p.valor_unitario.toFixed(2)}</td>
-                <td>R$ ${(p.quantidade * p.valor_unitario).toFixed(2)}</td>
-              </tr>`
-              )
-              .join("")}
-          </tbody>
-        </table>
-      </div>
-
-      <div class="danfe-totais">
-        <h3>Totais</h3>
-        <p><strong>Valor dos Produtos:</strong> R$ ${nota.total_amount.toFixed(2)}</p>
-        <p><strong>Total da Nota:</strong> R$ ${nota.total_amount.toFixed(2)}</p>
-      </div>
-
-      ${isFiscal
-        ? `
-          <div class="danfe-footer">
-            <p>Chave de Acesso: ${nota.chave_acesso ?? "---- ---- ---- ---- ----"}</p>
-            <p>Protocolo: ${nota.protocolo ?? "------"}</p>
+    <div id="danfe-preview">
+      <style>${css}</style>
+      <div class="danfe-container">
+        ${!isFiscal ? `<div class="marca-dagua">SEM VALOR FISCAL</div>` : ""}
+        <div class="conteudo">
+          <h2>DANFE - Documento Auxiliar da Nota Fiscal Eletrônica</h2>
+          <p><strong>Número NF-e:</strong> ${nota.numero_nfe}</p>
+          <p><strong>Cliente:</strong> ${nota.customer_name}</p>
+          <p><strong>CNPJ:</strong> ${nota.customer_cpf_cnpj}</p>
+          <p><strong>Data de Emissão:</strong> ${nota.data_emissao}</p>
+          <p><strong>Status:</strong> ${nota.status}</p>
+          <h3>Produtos/Serviços</h3>
+          <div class="danfe-produtos">
+            <table>
+              <thead>
+                <tr>
+                  <th>Descrição</th>
+                  <th>CFOP</th>
+                  <th>NCM</th>
+                  <th>Quantidade</th>
+                  <th>Valor Unitário</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${nota.produtos
+                  .map(
+                    (p) => `
+                  <tr>
+                    <td>${p.descricao}</td>
+                    <td>${p.cfop}</td>
+                    <td>${p.ncm}</td>
+                    <td>${p.quantidade}</td>
+                    <td>R$ ${p.valor_unitario.toFixed(2)}</td>
+                    <td>R$ ${(p.quantidade * p.valor_unitario).toFixed(2)}</td>
+                  </tr>`
+                  )
+                  .join("")}
+              </tbody>
+            </table>
           </div>
-        `
-        : `
-          <div class="nao-fiscal">❗ Documento sem valor fiscal. NF-e não autorizada pela SEFAZ.</div>
-        `}
+          <p><strong>Total:</strong> R$ ${nota.total_amount.toFixed(2)}</p>
+          ${
+            isFiscal
+              ? `
+              <p><strong>Chave de Acesso:</strong> ${nota.chave_acesso ?? "---- ----"}</p>
+              <p><strong>Protocolo:</strong> ${nota.protocolo ?? "---"}</p>
+              `
+              : `<p>❗ Documento não autorizado pela SEFAZ.</p>`
+          }
+        </div>
+      </div>
     </div>
   `;
 
-  // Cria um container invisível no DOM
-  const container = document.createElement("div");
-  container.innerHTML = html;
-  container.style.position = "absolute";
-  container.style.left = "-9999px";
-  document.body.appendChild(container);
+  // Cria container no DOM
+  const preview = document.createElement("div");
+  preview.id = "danfe-preview-container";
+  preview.innerHTML = html;
+  preview.style.position = "fixed";
+  preview.style.top = "0";
+  preview.style.left = "0";
+  preview.style.zIndex = "9999";
+  preview.style.background = "white";
+  preview.style.opacity = "1";
+  preview.style.width = "800px";
+  preview.style.minHeight = "800px";
 
-  // Gera o PDF usando html2pdf
-  html2pdf()
-    .set({
-      margin: 10,
-      filename: `DANFE_NFe_${nota.numero_nfe}.pdf`,
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-    })
-    .from(container)
-    .save()
-    .then(() => {
-      document.body.removeChild(container); // remove o HTML após gerar
-    });
+  document.body.appendChild(preview);
+
+  // Espera renderização e captura
+  setTimeout(async () => {
+    const element = document.getElementById("danfe-preview");
+
+    if (!element) {
+      console.error("Elemento DANFE não encontrado.");
+      return;
+    }
+
+    const canvas = await html2canvas(element, { scale: 2 });
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF("p", "mm", "a4");
+
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const imgProps = pdf.getImageProperties(imgData);
+
+    const pdfWidth = pageWidth;
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+    pdf.save(`DANFE_NFe_${nota.numero_nfe}.pdf`);
+
+    document.body.removeChild(preview);
+  }, 300);
 };
 
 export const gerarXml = (nota: NotaFiscal) => {

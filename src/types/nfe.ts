@@ -19,7 +19,7 @@ export type Parcela = {
 export interface NotaFiscal extends Omit<Order, "status"> {
   numero_nfe: string;
   status: StatusNFe;
-  produtos?: ProdutoNFe[];
+  produtos: ProdutoNFe[];
   xml?: string;
   chave_acesso?: string;
   protocolo?: string;
