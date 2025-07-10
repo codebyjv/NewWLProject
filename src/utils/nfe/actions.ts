@@ -13,93 +13,167 @@ export const gerarDanfe = async (nota: NotaFiscal) => {
       width: 800px;
       margin: 40px auto;
       padding: 20px;
-      background: #fff;
+      background-color: #fff;
       border: 1px solid #000;
-      position: relative;
+      box-sizing: border-box;
+    }
+
+    .danfe-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #000;
+      padding-bottom: 8px;
+      margin-bottom: 15px;
+    }
+
+    .danfe-header h2 {
+      font-size: 22px;
+      margin: 0;
+    }
+
+    .chave-acesso {
+      font-size: 14px;
+      text-align: right;
+      font-family: monospace;
+      letter-spacing: 1px;
+    }
+
+    .danfe-duas-colunas {
+      display: grid;
+      grid-template-columns: 60% 38%;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .danfe-section {
+      border: 1px solid #000;
+      padding: 10px;
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+
+    .danfe-section h3 {
+      font-size: 13px;
+      margin-bottom: 6px;
+      border-bottom: 1px solid #000;
+      padding-bottom: 3px;
+    }
+
+    .danfe-section p {
+      margin: 3px 0;
     }
 
     .danfe-produtos table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 10px;
+      font-size: 11px;
     }
 
     .danfe-produtos th,
     .danfe-produtos td {
-      border: 1px solid #333;
-      padding: 6px;
+      border: 1px solid #000;
+      padding: 4px;
       text-align: left;
-      font-size: 12px;
+      vertical-align: top;
     }
 
-    .marca-dagua {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) rotate(-45deg);
-      font-size: 40px;
-      color: rgba(255, 0, 0, 0.2);
-      white-space: nowrap;
-      z-index: 1;
-      pointer-events: none;
+    .danfe-produtos th {
+      background-color: #eee;
+      font-weight: bold;
+      text-transform: uppercase;
     }
 
-    .conteudo {
-      position: relative;
-      z-index: 2;
+    .danfe-rodape {
+      margin-top: 10px;
+      border-top: 1px solid #000;
+      font-size: 11px;
+      padding-top: 8px;
     }
   `;
 
   const html = `
     <div id="danfe-preview">
       <style>${css}</style>
+
       <div class="danfe-container">
-        ${!isFiscal ? `<div class="marca-dagua">SEM VALOR FISCAL</div>` : ""}
-        <div class="conteudo">
-          <h2>DANFE - Documento Auxiliar da Nota Fiscal Eletrônica</h2>
-          <p><strong>Número NF-e:</strong> ${nota.numero_nfe}</p>
-          <p><strong>Cliente:</strong> ${nota.customer_name}</p>
-          <p><strong>CNPJ:</strong> ${nota.customer_cpf_cnpj}</p>
-          <p><strong>Data de Emissão:</strong> ${nota.data_emissao}</p>
-          <p><strong>Status:</strong> ${nota.status}</p>
-          <h3>Produtos/Serviços</h3>
-          <div class="danfe-produtos">
-            <table>
-              <thead>
-                <tr>
-                  <th>Descrição</th>
-                  <th>CFOP</th>
-                  <th>NCM</th>
-                  <th>Quantidade</th>
-                  <th>Valor Unitário</th>
-                  <th>Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${nota.produtos
-                  .map(
-                    (p) => `
-                  <tr>
-                    <td>${p.descricao}</td>
-                    <td>${p.cfop}</td>
-                    <td>${p.ncm}</td>
-                    <td>${p.quantidade}</td>
-                    <td>R$ ${p.valor_unitario.toFixed(2)}</td>
-                    <td>R$ ${(p.quantidade * p.valor_unitario).toFixed(2)}</td>
-                  </tr>`
-                  )
-                  .join("")}
-              </tbody>
-            </table>
+        <div class="danfe-header">
+          <h2>DANFE</h2>
+          <p class="chave-acesso">Chave de Acesso: ${nota.chave_acesso ?? "---"}</p>
+        </div>
+
+        <div class="danfe-duas-colunas">
+          <div class="danfe-section">
+            <h3>Emitente</h3>
+            <p><strong>Razão Social:</strong> ${nota.seller}</p>
+            <p><strong>CNPJ:</strong> ${nota.seller_cnpj}</p>
+            <p><strong>Endereço:</strong> ${nota.seller_endereco}</p>
+            <p><strong>IE:</strong> ${nota.seller_ie}</p>
           </div>
-          <p><strong>Total:</strong> R$ ${nota.total_amount.toFixed(2)}</p>
+
+          <div class="danfe-section">
+            <h3>Destinatário</h3>
+            <p><strong>Nome:</strong> ${nota.customer_name}</p>
+            <p><strong>CNPJ:</strong> ${nota.customer_cpf_cnpj}</p>
+            <p><strong>Endereço:</strong> ${nota.customer_endereco}</p>
+            <p><strong>Município / UF:</strong> ${nota.customer_municipio} / ${nota.customer_uf}</p>
+            <p><strong>IE:</strong> ${nota.customer_ie}</p>
+          </div>
+        </div>
+
+        <div class="danfe-section emitente">
+          <h3>Emitente</h3>
+          <p><strong>Razão Social:</strong> WL COMERCIO E CALIBRACAO EM PESOS PADRAO LTDA</p>
+          <p><strong>CNPJ:</strong> 00.000.000/0001-00</p>
+          <p><strong>Endereço:</strong> Rua Exemplo, 123 - São Paulo/SP</p>
+          <p><strong>Inscrição Estadual:</strong> 123.456.789.000</p>
+        </div>
+
+        <div class="danfe-section destinatario">
+          <h3>Destinatário</h3>
+          <p><strong>Nome:</strong> ${nota.customer_name}</p>
+          <p><strong>CNPJ:</strong> ${nota.customer_cpf_cnpj}</p>
+          <p><strong>Endereço:</strong> Av. Teste, 456 - Rio de Janeiro/RJ</p>
+        </div>
+
+        <div class="danfe-section produtos">
+          <h3>Produtos/Serviços</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Descrição</th>
+                <th>CFOP</th>
+                <th>Quantidade</th>
+                <th>Unitário</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${nota.produtos
+                ?.map(
+                  (p, idx) => `
+                <tr>
+                  <td>${idx + 1}</td>
+                  <td>${p.descricao}</td>
+                  <td>${p.cfop}</td>
+                  <td>${p.quantidade}</td>
+                  <td>R$ ${p.valor_unitario.toFixed(2)}</td>
+                  <td>R$ ${(p.quantidade * p.valor_unitario).toFixed(2)}</td>
+                </tr>`
+                )
+                .join("")}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="danfe-section totais">
+          <p><strong>Valor Total da Nota:</strong> R$ ${nota.total_amount.toFixed(2)}</p>
+          <p><strong>Forma de Pagamento:</strong> ${nota.payment_method}</p>
           ${
-            isFiscal
-              ? `
-              <p><strong>Chave de Acesso:</strong> ${nota.chave_acesso ?? "---- ----"}</p>
-              <p><strong>Protocolo:</strong> ${nota.protocolo ?? "---"}</p>
-              `
-              : `<p>❗ Documento não autorizado pela SEFAZ.</p>`
+            nota.status === "autorizada"
+              ? `<p><strong>Protocolo:</strong> ${nota.protocolo ?? "------"}</p>`
+              : `<p style="color: red;"><strong>Documento sem valor fiscal</strong></p>`
           }
         </div>
       </div>
@@ -115,7 +189,7 @@ export const gerarDanfe = async (nota: NotaFiscal) => {
   preview.style.left = "0";
   preview.style.zIndex = "9999";
   preview.style.background = "white";
-  preview.style.opacity = "1";
+  preview.style.opacity = "0";
   preview.style.width = "800px";
   preview.style.minHeight = "800px";
 
