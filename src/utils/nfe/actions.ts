@@ -275,7 +275,10 @@ const DANFE_CSS = `
 .danfe-container {
   font-family: Arial, sans-serif;
   font-size: 8pt;
-  width: 21cm;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  page-break-after: always;
   margin: 0 auto;
   padding: 1cm;
   color: #000;
@@ -298,6 +301,28 @@ const DANFE_CSS = `
   display: flex;
   gap: 5mm;
   margin-top: 3mm;
+  page-break-inside: avoid;
+  display: flex;
+  gap: 5mm;
+  margin-top: 3mm;
+}
+
+.dados-emitente > div {
+  float: left;
+  margin-right: 5mm;
+  margin-bottom: 3mm;
+}
+
+.dados-nfe {
+  page-break-inside: avoid;
+}
+
+.destinatario {
+  page=break-inside: avoid;
+}
+
+.produtos {
+  page-break-inside: avoid;
 }
 
 /* Seções */
@@ -310,6 +335,7 @@ const DANFE_CSS = `
 
 /* Tabelas */
 table {
+  table-layout: fixed;
   width: 100%;
   border-collapse: collapse;
   margin: 1mm 0;
@@ -482,6 +508,15 @@ th, td {
 
 /* ===== IMPRESSÃO ===== */
 @media print {
+  .dados-emitente {
+    display: block !important;
+  }
+
+  .logo-box, .emitente-info, .danfe-info, .chave-acesso-box {
+    display: inline-block;
+    vertical-align: top;
+  }
+
   @page {
     size: A4;
     margin: 15mm 10mm;
@@ -507,13 +542,13 @@ export const gerarDanfe = async (nota: NotaFiscal) => {
   const container = document.createElement("div");
   container.id = "danfe-container";
   Object.assign(container.style, {
-    position: "fixed",
-    top: "0",
-    left: "0",
-    width: "850px",
-    minHeight: "1100px",
+    position: "absolute",
+    left: "-9999px",
+    width: "210mm",
+    height: "297mm",
+    padding: "10mm",
+    boxSizing: "border-box",
     background: "white",
-    zIndex: "9999"
   });
 
   // 2. Adicionar CSS
@@ -539,9 +574,10 @@ export const gerarDanfe = async (nota: NotaFiscal) => {
       useCORS: true,
       allowTaint: true,
       scrollX: 0,
-      scrollY: 0,
-      windowWidth: container.scrollWidth,
-      windowHeight: container.scrollHeight
+      scrollY: -window.scrollY,
+      windowWidth: document.documentElement.offsetWidth,
+      windowHeight: document.documentElement.offsetHeight,
+      backgroundColor: '#FFFFFF'
     });
 
     const pdf = new jsPDF("p", "mm", "a4");
