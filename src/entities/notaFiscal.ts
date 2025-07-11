@@ -15,7 +15,8 @@ export const mockNotaFiscal: NotaFiscal = {
   customer_name: "Cliente Mock",
   customer_cpf_cnpj: "00.000.000/0001-00",
   customer_ie: "1234567890",
-  customer_endereco: "Av. Teste, 456 - Rio de Janeiro/RJ",
+  customer_endereco: "Av. Teste, 456",
+  customer_bairro: "Leblon",
   customer_municipio: "Rio de Janeiro",
   customer_uf: "RJ",
   customer_cep: "20000-000",
@@ -24,7 +25,12 @@ export const mockNotaFiscal: NotaFiscal = {
   seller: "WL COMERCIO E CALIBRACAO EM PESOS PADRAO LTDA",
   seller_cnpj: "10.504.346/0001-80",
   seller_ie: "109953045",
-  seller_endereco: "Rua Roberto de Lamenais, 248 - São Paulo/SP",
+  seller_ie_st: "140538606113", // ✅ IE Substituição Tributária
+  seller_endereco: "Rua Roberto de Lamenais, 248",
+  seller_cidade: "São Paulo",
+  seller_uf: "SP",
+  seller_bairro: "Vila Mangalot",
+  seller_cep: "05.131-050",
   seller_fone: "(11) 3641-5974",
 
   chave_acesso: "35250110504346000180550010000093391523156270",
@@ -33,8 +39,10 @@ export const mockNotaFiscal: NotaFiscal = {
   total_amount: 1234.56,
   base_icms: 0,
   valor_icms: 0,
+  valor_fcp: 0,
   base_icms_subst: 0,
   valor_icms_subst: 0,
+  valor_icms_st: 0,
   valor_ipi: 0,
   valor_frete: 0,
   valor_seguro: 0,
@@ -42,6 +50,7 @@ export const mockNotaFiscal: NotaFiscal = {
   outras_despesas: 0,
 
   payment_method: "pix",
+  duplicatas: [],
 
   transportadora: {
     nome: "L4B LOGISTICA LTDA",
@@ -55,7 +64,21 @@ export const mockNotaFiscal: NotaFiscal = {
     quantidade: 1,
     peso_bruto: 20,
     peso_liquido: 20,
+
+    // ✅ campos adicionados para suportar template
+    placa: "ABC1D23",
+    uf_placa: "SP",
+    rntc: "00012345",
+    numero_volumes: "001",
+    frete_por_conta: "Destinatário"
   },
+
+  // ✅ campos complementares para ISSQN e tributos
+  inscricao_municipal: "57069298",
+  valor_servicos: 0,
+  base_issqn: 0,
+  valor_issqn: 0,
+  tributos_aproximados: 13.92,
 
   produtos: [
     {
@@ -67,6 +90,11 @@ export const mockNotaFiscal: NotaFiscal = {
       unidade: "PC",
       quantidade: 1,
       valor_unitario: 400,
+      base_calculo_icms: 0,
+      valor_icms: 0,
+      valor_ipi: 0,
+      aliquota_icms: 0,
+      aliquota_ipi: 0,
     },
   ],
 

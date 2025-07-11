@@ -33,6 +33,7 @@ export interface NotaFiscal extends Omit<Order, "status"> {
   customer_cpf_cnpj: string;
   customer_ie?: string;
   customer_endereco: string;
+  customer_bairro: string;
   customer_municipio: string;
   customer_uf: string;
   customer_cep: string;
@@ -41,17 +42,24 @@ export interface NotaFiscal extends Omit<Order, "status"> {
   seller: string;
   seller_cnpj: string;
   seller_ie?: string;
+  seller_ie_st: string;
   seller_endereco: string;
+  seller_cidade: string;
+  seller_uf: string;
+  seller_bairro: string;
+  seller_cep: string;
   seller_fone?: string;
 
-  chave_acesso?: string;
+  chave_acesso: string;
   protocolo?: string;
 
   total_amount: number;
   base_icms?: number;
   valor_icms?: number;
+  valor_fcp?: number;
   base_icms_subst?: number;
   valor_icms_subst?: number;
+  valor_icms_st?: number;
   valor_ipi?: number;
   valor_frete?: number;
   valor_seguro?: number;
@@ -59,6 +67,11 @@ export interface NotaFiscal extends Omit<Order, "status"> {
   outras_despesas?: number;
 
   payment_method: "boleto_bancario" | "pix" | "cartao_credito" | "cartao_debito";
+  duplicatas: {
+    numero: string;
+    vencimento: string;
+    valor: number;
+  }[];
 
   transportadora?: {
     nome: string;
@@ -72,7 +85,18 @@ export interface NotaFiscal extends Omit<Order, "status"> {
     quantidade: number;
     peso_bruto: number;
     peso_liquido: number;
+    placa: string;
+    uf_placa: string;
+    rntc: string;
+    numero_volumes: string;
+    frete_por_conta: string;
   };
+
+  inscricao_municipal: string;
+  valor_servicos: number;
+  base_issqn: number;
+  valor_issqn: number;
+  tributos_aproximados: number;
 
   produtos: {
     codigo?: string;
@@ -83,6 +107,11 @@ export interface NotaFiscal extends Omit<Order, "status"> {
     unidade?: string;
     quantidade: number;
     valor_unitario: number;
+    base_calculo_icms: number;
+    valor_icms: number;
+    valor_ipi: number;
+    aliquota_icms: number;
+    aliquota_ipi: number;
   }[];
 
   informacoes_adicionais?: string;

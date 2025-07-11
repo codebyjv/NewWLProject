@@ -1,1 +1,0 @@
-// tipos auxiliares se precisar
