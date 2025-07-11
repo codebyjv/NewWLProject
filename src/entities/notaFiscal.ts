@@ -17,7 +17,7 @@ export const mockNotaFiscal: NotaFiscal = {
   customer_ie: "1234567890",
   customer_endereco: "Av. Teste, 456",
   customer_bairro: "Leblon",
-  customer_municipio: "Rio de Janeiro",
+  customer_cidade: "Rio de Janeiro",
   customer_uf: "RJ",
   customer_cep: "20000-000",
   customer_fone: "(21) 4002-8922",
@@ -25,7 +25,8 @@ export const mockNotaFiscal: NotaFiscal = {
   seller: "WL COMERCIO E CALIBRACAO EM PESOS PADRAO LTDA",
   seller_cnpj: "10.504.346/0001-80",
   seller_ie: "109953045",
-  seller_ie_st: "140538606113", // ✅ IE Substituição Tributária
+  seller_ie_st: "140538606113",
+  seller_im: "000000",
   seller_endereco: "Rua Roberto de Lamenais, 248",
   seller_cidade: "São Paulo",
   seller_uf: "SP",
@@ -98,6 +99,8 @@ export const mockNotaFiscal: NotaFiscal = {
     },
   ],
 
+  pagina_atual: 1,
+  paginas_totais: 1,
   informacoes_adicionais:
     "DEVOLUÇÃO TOTAL DAS MERCADORIAS DA NF: 228 DO DIA: 10/12/2024. Permite aproveitamento do crédito de ICMS no valor de R$13,92. Documento emitido por ME ou EPP optante pelo Simples Nacional. Não gera direito a crédito fiscal de IPI.",
 

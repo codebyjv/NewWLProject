@@ -34,7 +34,7 @@ export interface NotaFiscal extends Omit<Order, "status"> {
   customer_ie?: string;
   customer_endereco: string;
   customer_bairro: string;
-  customer_municipio: string;
+  customer_cidade: string;
   customer_uf: string;
   customer_cep: string;
   customer_fone?: string;
@@ -43,6 +43,7 @@ export interface NotaFiscal extends Omit<Order, "status"> {
   seller_cnpj: string;
   seller_ie?: string;
   seller_ie_st: string;
+  seller_im: string;
   seller_endereco: string;
   seller_cidade: string;
   seller_uf: string;
@@ -115,6 +116,8 @@ export interface NotaFiscal extends Omit<Order, "status"> {
   }[];
 
   informacoes_adicionais?: string;
+  pagina_atual: number,
+  paginas_totais: number,
 
   created_date: string;
   sale_date: string;

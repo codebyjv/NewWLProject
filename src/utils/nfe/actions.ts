@@ -272,6 +272,66 @@ const DANFE_TEMPLATE_HTML = `
 
 // CSS para a impressão do DANFE
 const DANFE_CSS = `
+.danfe-container {
+  font-family: Arial, sans-serif;
+  font-size: 8pt;
+  width: 21cm;
+  margin: 0 auto;
+  padding: 1cm;
+  color: #000;
+}
+
+/* Cabeçalho */
+.danfe-header {
+  margin-bottom: 5mm;
+  border-bottom: 1px solid #000;
+  padding-bottom: 3mm;
+}
+
+.recebimento-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 3mm;
+}
+
+.dados-emitente {
+  display: flex;
+  gap: 5mm;
+  margin-top: 3mm;
+}
+
+/* Seções */
+.section-title {
+  font-size: 9pt;
+  font-weight: bold;
+  margin: 3mm 0 1mm;
+  text-transform: uppercase;
+}
+
+/* Tabelas */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1mm 0;
+}
+
+th, td {
+  border: 1px solid #000;
+  padding: 1mm;
+  vertical-align: top;
+}
+
+.label {
+  font-weight: bold;
+  font-size: 7pt;
+  display: block;
+}
+
+.value {
+  font-size: 8pt;
+  display: block;
+  min-height: 4mm;
+}
 
 /* ===== BASE ===== */
 .nfeArea {
@@ -508,12 +568,54 @@ export const gerarHtmlDanfe = (nota: NotaFiscal, htmlTemplate: string) => {
 
   // 2. Mapeamento de tags
   const replacements = {
+    // Documentação
+    '[nl_invoice]': nota.numero_nfe,
+    '[ds_invoice_serie]': nota.serie,
+    '[ds_code_operation_type]': nota.tipo_operacao,
+    '[ds_danfe]': nota.chave_acesso,
+    '[_ds_transaction_nature]': nota.natureza_operacao,
+    '[protocol_label]': 'Protocolo de autorização',
+    '[ds_protocol]': nota.protocolo,
+    '[{BarCode}]': gerarCodigoBarras(nota.chave_acesso || ""),
+
     // Emitente
     '[ds_company_issuer_name]': nota.seller,
     '[nl_company_cnpj_cpf]': formatCpfCnpj(nota.seller_cnpj),
     '[ds_company_address]': nota.seller_endereco,
-    // ... (complete com todos os mapeamentos necessários)
-    
+    '[ds_company_neighborhood]': nota.seller_bairro,
+    '[nu_company_cep]': nota.seller_cep,
+    '[ds_company_city_name]': nota.seller_cidade,
+    '[ds_company_uf]': nota.seller_uf,
+    '[nl_company_phone_number]': nota.seller_fone,
+    '[nl_company_ie]': nota.seller_ie,
+    '[nl_company_ie_st]': nota.seller_ie_st,
+    '[ds_company_im]': nota.seller_im,
+
+    // Destinatário
+    '[ds_client_receiver_name]': nota.customer_name,
+    '[ds_client_address]': nota.customer_endereco,
+    '[ds_client_neighborhood]': nota.customer_bairro,
+    '[nu_client_cep]': nota.customer_cep,
+    '[ds_client_city_name]': nota.customer_cidade,
+    '[nl_client_phone_number]': nota.customer_fone,
+    '[ds_client_uf]': nota.customer_uf,
+    '[ds_client_ie]': nota.customer_ie,
+
+    // Data e Hora
+    '[dt_input_output]': nota.data_emissao,
+    '[hr_input_output]': nota.hora_saida, 
+
+    // Valores e Cálculos
+    '[vl_total_serv]': nota.valor_servicos,
+    '[tot_bc_issqn]': nota.base_issqn,
+    '[tot_issqn]': nota.valor_issqn,
+
+    // Informações complementares
+    '[ds_additional_information]': nota.informacoes_adicionais,
+
+    // Páginas
+    '[actual_page]': nota.pagina_atual,
+    '[total_pages]': nota.paginas_totais,
     // Produtos
     '[items]': nota.produtos?.map(p => `
       <tr>
@@ -527,7 +629,7 @@ export const gerarHtmlDanfe = (nota: NotaFiscal, htmlTemplate: string) => {
 
   // 3. Aplicar todas as substituições
   Object.entries(replacements).forEach(([key, value]) => {
-    htmlModel = htmlModel.replace(new RegExp(escapeRegExp(key), 'g'), value || '');
+    htmlModel = htmlModel.replace(new RegExp(escapeRegExp(key), 'g'), String(value ?? ''));
   });
 
   return htmlModel;
